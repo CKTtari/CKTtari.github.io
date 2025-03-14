@@ -202,8 +202,8 @@
           let rightCircle = calculateMinimumBoundingCircle(rightPoints);
           let area = PI * rightCircle.r * rightCircle.r;
 
-          if (area > 2400) {
-            targetVolume = map(area, 2400, 150000, 0, 0.5);
+          if (area > 2100) {
+            targetVolume = map(area, 2100, 130000, 0, 0.5);
             targetVolume = constrain(targetVolume, 0, 0.5);
           } else {
             targetVolume = 0;
