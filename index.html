@@ -67,7 +67,7 @@
       capture.hide();
 
       oscTriangle = new p5.Oscillator('triangle');
-      oscSquare = new p5.Oscillator('sine');
+      oscSquare = new p5.Oscillator('triangle');
       oscTriangle.start();
       oscSquare.start();
       oscTriangle.amp(0, 0.05);
@@ -215,7 +215,7 @@
         }
 
         // 平滑过渡音量（减少平滑度）
-        currentVolume = lerp(currentVolume, targetVolume, 0.8);
+        currentVolume = lerp(currentVolume, targetVolume, 0.65);
 
         if (leftHand) {
           const leftPoints = [4, 8, 12, 16, 20].map(i => leftHand.keypoints[i]);
