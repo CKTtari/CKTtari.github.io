@@ -209,7 +209,7 @@
             targetVolume = 0;
           }
 
-          drawHandCircle(rightCircle, rightPoints, color(0, 255, 0));
+          drawHandCircle(rightCircle, rightPoints, color(0, 0, 255));
         } else {
           targetVolume = 0;
         }
@@ -265,7 +265,7 @@
       // 绘制包围圆
       noFill();
       stroke(circleColor);
-      ellipse(circle.x, circle.y, circle.r);
+      ellipse(circle.x, circle.y, circle.r*1.5);
 
       // 添加粒子效果
       if (random() < 0.3) {
