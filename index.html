@@ -158,8 +158,17 @@
       for (let i = 0; i < notes.length; i++) {
         let x = frequencyToX(frequencies[i]);
 
+        // 判断是否为黑键（升调或降调音符）
+        let isBlackKey = notes[i].includes('#');
+
+        // 根据是否为黑键设置线条颜色
+        if (isBlackKey) {
+          stroke(55); // 黑色
+        } else {
+          stroke(200); // 白色
+        }
+
         // 绘制竖直辅助线
-        stroke(100);
         line(x, 0, x, height);
 
         // 绘制音符标签
@@ -211,7 +220,7 @@
 
           drawHandCircle(rightCircle, rightPoints, color(0, 0, 255));
         } else {
-          targetVolume =  0;
+          targetVolume = 0;
         }
 
         // 平滑过渡音量（减少平滑度）
@@ -265,7 +274,7 @@
       // 绘制包围圆
       noFill();
       stroke(circleColor);
-      ellipse(circle.x, circle.y, circle.r*1.5);
+      ellipse(circle.x, circle.y, circle.r * 1.5);
 
       // 添加粒子效果
       if (random() < 0.3) {
@@ -456,7 +465,7 @@
       // 使用对数插值来实现柔和的吸附
       let logFreq = Math.log2(freq);
       let logClosest = Math.log2(closestFreq);
-      let snappedLogFreq = lerp(logFreq, logClosest, snapStrength*0.5);
+      let snappedLogFreq = lerp(logFreq, logClosest, snapStrength * 0.5);
 
       return Math.pow(2, snappedLogFreq);
     }
