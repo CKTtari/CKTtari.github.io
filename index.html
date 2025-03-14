@@ -226,8 +226,8 @@
 
           drawHandCircle(leftCircle, leftPoints, color(255, 0, 0));
 
-          oscTriangle.amp(currentVolume * 0.7, 0.05);  // 减少音量变化时间
-          oscSquare.amp(currentVolume * 0.3, 0.05);  // 减少音量变化时间
+          oscTriangle.amp(currentVolume * 0.3, 0.05);  // 减少音量变化时间
+          oscSquare.amp(currentVolume * 0.7, 0.05);  // 减少音量变化时间
 
           // 绘制当前音高指示线
           stroke(255, 0, 0);
@@ -443,15 +443,13 @@
         }
       }
 
-      // 根据频率差值动态调整吸附强度
-      const maxDiff = Math.log2(frequencies[frequencies.length - 1]) - Math.log2(frequencies[0]);
-      let snapStrength = map(minDiff, 0, maxDiff, 0.8, 0.1);
-      snapStrength = constrain(snapStrength, 0.1, 0.8);
+      // 固定吸附强度为 0.01
+      let snapStrength = 0.1;
 
       // 多次插值以细化过渡
       let logFreq = Math.log2(freq);
       let logClosest = Math.log2(closestFreq);
-      const interpolationSteps = 5; // 插值次数
+      const interpolationSteps = 3; // 插值次数
       for (let i = 0; i < interpolationSteps; i++) {
         logFreq = lerp(logFreq, logClosest, snapStrength);
       }
