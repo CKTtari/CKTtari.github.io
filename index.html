@@ -224,7 +224,7 @@
         }
 
         // 平滑过渡音量（减少平滑度）
-        currentVolume = lerp(currentVolume, targetVolume, 0.65);
+        currentVolume = lerp(currentVolume, targetVolume, 0.75);
 
         if (leftHand) {
           const leftPoints = [4, 8, 12, 16, 20].map(i => leftHand.keypoints[i]);
@@ -277,7 +277,7 @@
       ellipse(circle.x, circle.y, circle.r * 1.5);
 
       // 添加粒子效果
-      if (random() < 0.3) {
+      if (random() < 0.4) {
         particles.push(new Particle(circle.x, circle.y, circle.r));
       }
     }
@@ -365,7 +365,7 @@
       }
 
       // 平滑过渡音高（减少平滑度）
-      currentFreq = lerp(currentFreq, targetFreq, 0.4);
+      currentFreq = lerp(currentFreq, targetFreq, 0.36);
       oscTriangle.freq(currentFreq);
       oscSquare.freq(currentFreq);
     }
@@ -465,7 +465,7 @@
       // 使用对数插值来实现柔和的吸附
       let logFreq = Math.log2(freq);
       let logClosest = Math.log2(closestFreq);
-      let snappedLogFreq = lerp(logFreq, logClosest, snapStrength * 0.65);
+      let snappedLogFreq = lerp(logFreq, logClosest, snapStrength * 0.6);
 
       return Math.pow(2, snappedLogFreq);
     }
