@@ -265,7 +265,7 @@
       // 绘制包围圆
       noFill();
       stroke(circleColor);
-      ellipse(circle.x, circle.y, circle.r * 2);
+      ellipse(circle.x, circle.y, circle.r);
 
       // 添加粒子效果
       if (random() < 0.3) {
@@ -456,7 +456,7 @@
       // 使用对数插值来实现柔和的吸附
       let logFreq = Math.log2(freq);
       let logClosest = Math.log2(closestFreq);
-      let snappedLogFreq = lerp(logFreq, logClosest, snapStrength);
+      let snappedLogFreq = lerp(logFreq, logClosest, snapStrength*0.5);
 
       return Math.pow(2, snappedLogFreq);
     }
