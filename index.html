@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hand Instrument</title>
+  <script src="https://cdn.jsdelivr.net/npm/p5"></script>
+  <script src="https://cdn.jsdelivr.net/npm/p5/lib/addons/p5.sound.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/hand-pose-detection"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/face-landmarks-detection"></script>
+</head>
+
+<body>
+  <script>
+    let capture;
+    let handDetector;
+    let faceDetector;
+    let oscTriangle, oscSquare;
+    let targetFreq = 0;
+    let currentFreq = 0;
+    let particles = [];
+    let faceParticles = [];
+    let faceMesh;
+    const notes = ['C3', 'C#3', 'D3', 'D#3', 'E3', 'F3', 'F#3', 'G3', 'G#3', 'A3', 'A#3', 'B3',
+      'C4', 'C#4', 'D4', 'D#4', 'E4', 'F4', 'F#4', 'G4', 'G#4', 'A4', 'A#4', 'B4',
+      'C5', 'C#5', 'D5', 'D#5', 'E5', 'F5', 'F#5', 'G5', 'G#5', 'A5', 'A#5', 'B5', 'C6'];
+    const frequencies = [130.81, 138.59, 146.83, 155.56, 164.81, 174.61, 185.00, 196.00, 207.65, 220.00, 233.08, 246.94,
+      261.63, 277.18, 293.66, 311.13, 329.63, 349.23, 369.99, 392.00, 415.30, 440.00, 466.16, 493.88,
+      523.25, 554.37, 587.33, 622.25, 659.25, 698.46, 739.99, 783.99, 830.61, 880.00, 932.33, 987.77, 1046.50];
+
+    class Particle {
+      constructor(x, y, radius) {
+        this.x = x + random(-radius / 2, radius / 2);
+        this.y = y + random(-radius / 2, radius / 2);
+        this.alpha = 255;
+        this.radius = random(2, 5);
+        this.speed = random(0.5, 2);
+        this.angle = random(TWO_PI);
+      }
+
+      update() {
+        this.x += cos(this.angle) * this.speed;
+        this.y += sin(this.angle) * this.speed;
+        this.alpha -= 5;
+      }
+
+      draw() {
+        noStroke();
+        fill(255, 255, 255, this.alpha);
+        ellipse(this.x, this.y, this.radius);
+      }
+
+      isDead() {
+        return this.alpha <= 0;
+      }
+    }
+
+    async function setup() {
+      let canvas = createCanvas(windowWidth, windowHeight);
+      canvas.position(0, 0);
+
+      capture = createCapture(VIDEO);
+      capture.hide();
+
+      oscTriangle = new p5.Oscillator('triangle');
+      oscSquare = new p5.Oscillator('square');
+      oscTriangle.start();
+      oscSquare.start();
+      oscTriangle.amp(0, 0.05);
+      oscSquare.amp(0, 0.05);
+
+      await loadDetectors();
+      console.log('Hand and face detection models loaded');
+      frameRate(60);
+    }
+
+    async function loadDetectors() {
+      // 加载手部识别模型
+      const handModel = handPoseDetection.SupportedModels.MediaPipeHands;
+      const handConfig = {
+        runtime: 'mediapipe',
+        solutionPath: 'https://cdn.jsdelivr.net/npm/@mediapipe/hands/',
+        modelType: 'lite',
+        maxHands: 2
+      };
+      handDetector = await handPoseDetection.createDetector(handModel, handConfig);
+
+      // 加载面部识别模型
+      const faceModel = faceLandmarksDetection.SupportedModels.MediaPipeFaceMesh;
+      const faceConfig = {
+        runtime: 'mediapipe',
+        solutionPath: 'https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/',
+        maxFaces: 1
+      };
+      faceDetector = await faceLandmarksDetection.createDetector(faceModel, faceConfig);
+    }
+
+    function windowResized() {
+      resizeCanvas(windowWidth, windowHeight);
+      capture.size(windowWidth, windowHeight);
+    }
+
+    function frequencyToX(freq) {
+      let logFreq = Math.log2(freq);
+      let logMin = Math.log2(frequencies[0]);
+      let logMax = Math.log2(frequencies[frequencies.length - 1]);
+      return map(logFreq, logMin, logMax, 40, width - 40);
+    }
+
+    function xToFrequency(x) {
+      let logMin = Math.log2(frequencies[0]);
+      let logMax = Math.log2(frequencies[frequencies.length - 1]);
+      let logFreq = map(x, 40, width - 40, logMin, logMax);
+      return Math.pow(2, logFreq);
+    }
+
+    async function draw() {
+      background(0);
+
+      // 计算视频尺寸，使其填满窗口宽度
+      let videoAspect = capture.width / capture.height;
+      let videoW = windowWidth;
+      let videoH = videoW / videoAspect;
+      let videoY = (windowHeight - videoH) / 2;
+
+      // 绘制视频
+      push();
+      translate(videoW, 0);
+      scale(-1, 1);
+      image(capture, 0, videoY, videoW, videoH);
+      pop();
+
+      // 检测并绘制面部特效
+      if (faceDetector && capture.loadedmetadata) {
+        await detectFace(0, videoY, videoW, videoH);
+      }
+
+      // 更新和绘制所有粒子（先绘制面部粒子，确保在底层）
+      updateParticles();
+
+      // 绘制音符刻度和辅助线
+      drawNoteScale();
+
+      if (handDetector && capture.loadedmetadata) {
+        await detectHands(0, videoY, videoW, videoH);
+      }
+    }
+    function drawNoteScale() {
+      push();
+      textAlign(CENTER, BOTTOM);
+      textSize(12);
+
+      for (let i = 0; i < notes.length; i++) {
+        let x = frequencyToX(frequencies[i]);
+
+        // 绘制竖直辅助线
+        stroke(100);
+        line(x, 0, x, height);
+
+        // 绘制音符标签
+        noStroke();
+        fill(255);
+        text(notes[i], x, height - 10);
+      }
+      pop();
+    }
+
+    let targetVolume = 0;
+    let currentVolume = 0;
+
+    async function detectHands(videoX, videoY, videoW, videoH) {
+      if (!handDetector) return;
+      try {
+        const hands = await handDetector.estimateHands(capture.elt);
+        let rightHand = null;
+        let leftHand = null;
+
+        for (let hand of hands) {
+          hand.keypoints = hand.keypoints.map(point => {
+            let x = map(point.x, 0, capture.width, 0, videoW);
+            let y = map(point.y, 0, capture.height, 0, videoH);
+            return {
+              x: videoW - x + videoX,
+              y: y + videoY
+            };
+          });
+
+          if (hand.handedness === 'Right') {
+            rightHand = hand;
+          } else {
+            leftHand = hand;
+          }
+        }
+
+        if (rightHand) {
+          const rightPoints = [4, 8, 12, 16, 20].map(i => rightHand.keypoints[i]);
+          let rightCircle = calculateMinimumBoundingCircle(rightPoints);
+          let area = PI * rightCircle.r * rightCircle.r;
+
+          if (area > 2000) {
+            targetVolume = map(area, 2000, 150000, 0, 0.5);
+            targetVolume = constrain(targetVolume, 0, 0.5);
+          } else {
+            targetVolume = 0;
+          }
+
+          drawHandCircle(rightCircle, rightPoints, color(0, 255, 0));
+        } else {
+          targetVolume = 0;
+        }
+
+        // 平滑过渡音量（减少平滑度）
+        currentVolume = lerp(currentVolume, targetVolume, 0.4);
+
+        if (leftHand) {
+          const leftPoints = [4, 8, 12, 16, 20].map(i => leftHand.keypoints[i]);
+          let leftCircle = calculateMinimumBoundingCircle(leftPoints);
+
+          let rawFreq = xToFrequency(leftCircle.x);
+          targetFreq = snapToNearestNote(rawFreq);
+          targetFreq = constrain(targetFreq, frequencies[0], frequencies[frequencies.length - 1]);
+
+          drawHandCircle(leftCircle, leftPoints, color(255, 0, 0));
+
+          oscTriangle.amp(currentVolume * 0.7, 0.05);  // 减少音量变化时间
+          oscSquare.amp(currentVolume * 0.3, 0.05);  // 减少音量变化时间
+
+          // 绘制当前音高指示线
+          stroke(255, 0, 0);
+          line(leftCircle.x, 0, leftCircle.x, height);
+        }
+
+        if (!rightHand && !leftHand) {
+          oscTriangle.amp(0, 0.05);  // 减少音量变化时间
+          oscSquare.amp(0, 0.05);  // 减少音量变化时间
+        }
+
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    function drawHandCircle(circle, points, circleColor) {
+      // 绘制手部关键点
+      for (let point of points) {
+        fill(255);
+        noStroke();
+        ellipse(point.x, point.y, 10, 10);
+      }
+
+      // 绘制包围圆
+      noFill();
+      stroke(circleColor);
+      ellipse(circle.x, circle.y, circle.r * 2);
+
+      // 添加粒子效果
+      if (random() < 0.3) {
+        particles.push(new Particle(circle.x, circle.y, circle.r));
+      }
+    }
+
+    function calculateMinimumBoundingCircle(points) {
+      if (points.length === 0) return { x: 0, y: 0, r: 0 };
+
+      // 计算点的中心
+      let centerX = points.reduce((sum, p) => sum + p.x, 0) / points.length;
+      let centerY = points.reduce((sum, p) => sum + p.y, 0) / points.length;
+
+      // 计算最大半径
+      let maxRadius = 0;
+      for (let point of points) {
+        let distance = dist(centerX, centerY, point.x, point.y);
+        maxRadius = max(maxRadius, distance);
+      }
+
+      return {
+        x: centerX,
+        y: centerY,
+        r: maxRadius
+      };
+    }
+
+    function onFaceResults(results) {
+      if (results.multiFaceLandmarks) {
+        for (const landmarks of results.multiFaceLandmarks) {
+          // 转换坐标到画布空间
+          const points = landmarks.map(point => ({
+            x: point.x * width,
+            y: point.y * height
+          }));
+
+          // 计算面部中心
+          let centerX = 0, centerY = 0;
+          for (let point of points) {
+            centerX += point.x;
+            centerY += point.y;
+          }
+          centerX /= points.length;
+          centerY /= points.length;
+
+          // 添加面部粒子效果
+          if (random() < 0.3) {
+            for (let i = 0; i < 5; i++) {
+              faceParticles.push(new FaceParticle(
+                centerX + random(-50, 50),
+                centerY + random(-50, 50)
+              ));
+            }
+          }
+
+          // 绘制面部网格特效
+          push();
+          stroke(200, 100, 255, 100);
+          noFill();
+          beginShape(POINTS);
+          for (let i = 0; i < points.length; i += 3) {
+            vertex(points[i].x, points[i].y);
+          }
+          endShape();
+          pop();
+        }
+      }
+    }
+
+    function updateParticles() {
+      // 更新和绘制手部粒子
+      for (let i = particles.length - 1; i >= 0; i--) {
+        particles[i].update();
+        particles[i].draw();
+        if (particles[i].isDead()) {
+          particles.splice(i, 1);
+        }
+      }
+
+      // 更新和绘制面部粒子
+      for (let i = faceParticles.length - 1; i >= 0; i--) {
+        faceParticles[i].update();
+        faceParticles[i].draw();
+        if (faceParticles[i].isDead()) {
+          faceParticles.splice(i, 1);
+        }
+      }
+
+      // 平滑过渡音高（减少平滑度）
+      currentFreq = lerp(currentFreq, targetFreq, 0.20);
+      oscTriangle.freq(currentFreq);
+      oscSquare.freq(currentFreq);
+    }
+
+    async function detectFace(videoX, videoY, videoW, videoH) {
+      if (!faceDetector) return;
+      try {
+        const faces = await faceDetector.estimateFaces(capture.elt, {
+          flipHorizontal: false
+        });
+
+        for (let face of faces) {
+          // 绘制面部网格
+          for (let keypoint of face.keypoints) {
+            let x = map(keypoint.x, 0, capture.width, 0, videoW);
+            let y = map(keypoint.y, 0, capture.height, 0, videoH);
+            x = videoW - x; // 镜像修正
+            y = y + videoY;
+
+            // 减少粒子生成频率，但增加每次生成的数量
+            if (random() < 0.005) {
+              for (let i = 0; i < 3; i++) {
+                faceParticles.push(new FaceParticle(x, y));
+              }
+            }
+          }
+
+          // 绘制面部轮廓
+          stroke(200, 100, 255, 80);
+          strokeWeight(2);
+          noFill();
+
+          let silhouettePoints = face.keypoints.filter((_, i) => i % 5 === 0);
+          beginShape();
+          for (let point of silhouettePoints) {
+            let x = map(point.x, 0, capture.width, 0, videoW);
+            let y = map(point.y, 0, capture.height, 0, videoH);
+            x = videoW - x;
+            y = y + videoY;
+            vertex(x, y);
+          }
+          endShape(CLOSE);
+        }
+      } catch (error) {
+        console.error('Face detection error:', error);
+      }
+    }
+
+    class FaceParticle {
+      constructor(x, y) {
+        this.x = x + random(-30, 30);
+        this.y = y + random(-30, 30);
+        this.size = random(60, 100);
+        this.alpha = random(100, 150);
+        this.speed = random(0.1, 0.3);
+        this.angle = random(TWO_PI);
+        this.color = color(
+          random(180, 255),
+          random(100, 180),
+          random(200, 255),
+          this.alpha
+        );
+      }
+
+      update() {
+        this.x += cos(this.angle) * this.speed;
+        this.y += sin(this.angle) * this.speed;
+        this.alpha -= 1;
+        this.size *= 0.995;
+        this.color.setAlpha(this.alpha);
+      }
+
+      draw() {
+        noStroke();
+        fill(this.color);
+        ellipse(this.x, this.y, this.size);
+      }
+
+      isDead() {
+        return this.alpha <= 0 || this.size < 20;
+      }
+    }
+
+    function snapToNearestNote(freq) {
+      // 查找最近的音符频率
+      let minDiff = Infinity;
+      let closestFreq = freq;
+
+      for (let noteFreq of frequencies) {
+        let diff = Math.abs(Math.log2(freq) - Math.log2(noteFreq));
+        if (diff < minDiff) {
+          minDiff = diff;
+          closestFreq = noteFreq;
+        }
+      }
+
+      // 使用对数插值来实现柔和的吸附
+      let snapStrength = 0.3; // 吸附强度，0-1之间
+      let logFreq = Math.log2(freq);
+      let logClosest = Math.log2(closestFreq);
+      let snappedLogFreq = lerp(logFreq, logClosest, snapStrength);
+
+      return Math.pow(2, snappedLogFreq);
+    }
+  </script>
+</body>
+
+</html>
