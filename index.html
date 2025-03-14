@@ -75,7 +75,7 @@
 
       await loadDetectors();
       console.log('Hand and face detection models loaded');
-      frameRate(60);
+      frameRate(144);
     }
 
     async function loadDetectors() {
@@ -346,7 +346,7 @@
       }
 
       // 平滑过渡音高（减少平滑度）
-      currentFreq = lerp(currentFreq, targetFreq, 0.20);
+      currentFreq = lerp(currentFreq, targetFreq, 0.9);
       oscTriangle.freq(currentFreq);
       oscSquare.freq(currentFreq);
     }
@@ -443,13 +443,20 @@
         }
       }
 
-      // 使用对数插值来实现柔和的吸附
-      let snapStrength = 0.3; // 吸附强度，0-1之间
+      // 根据频率差值动态调整吸附强度
+      const maxDiff = Math.log2(frequencies[frequencies.length - 1]) - Math.log2(frequencies[0]);
+      let snapStrength = map(minDiff, 0, maxDiff, 0.8, 0.1);
+      snapStrength = constrain(snapStrength, 0.1, 0.8);
+
+      // 多次插值以细化过渡
       let logFreq = Math.log2(freq);
       let logClosest = Math.log2(closestFreq);
-      let snappedLogFreq = lerp(logFreq, logClosest, snapStrength);
+      const interpolationSteps = 5; // 插值次数
+      for (let i = 0; i < interpolationSteps; i++) {
+        logFreq = lerp(logFreq, logClosest, snapStrength);
+      }
 
-      return Math.pow(2, snappedLogFreq);
+      return Math.pow(2, logFreq);
     }
   </script>
 </body>
