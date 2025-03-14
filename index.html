@@ -67,7 +67,7 @@
       capture.hide();
 
       oscTriangle = new p5.Oscillator('triangle');
-      oscSquare = new p5.Oscillator('square');
+      oscSquare = new p5.Oscillator('sine');
       oscTriangle.start();
       oscSquare.start();
       oscTriangle.amp(0, 0.05);
@@ -75,7 +75,8 @@
 
       await loadDetectors();
       console.log('Hand and face detection models loaded');
-      frameRate(144);
+      frameRate(120);
+      this.prevPitchX = 0
     }
 
     async function loadDetectors() {
@@ -214,20 +215,29 @@
         }
 
         // 平滑过渡音量（减少平滑度）
-        currentVolume = lerp(currentVolume, targetVolume, 0.4);
+        currentVolume = lerp(currentVolume, targetVolume, 0.3);
 
         if (leftHand) {
           const leftPoints = [4, 8, 12, 16, 20].map(i => leftHand.keypoints[i]);
           let leftCircle = calculateMinimumBoundingCircle(leftPoints);
 
           let rawFreq = xToFrequency(leftCircle.x);
-          targetFreq = snapToNearestNote(rawFreq);
+          // 新增：计算音高 x 位置的位移差
+          let pitchX = leftCircle.x;
+          let deltaX = Math.abs(pitchX - this.prevPitchX);
+          this.prevPitchX = pitchX;
+
+          // 根据位移差调整吸附强度
+          let snapStrength = map(deltaX, 0, 20, 0.5, 0); // 位移差越大，吸附强度越小
+          snapStrength = constrain(snapStrength, 0, 0.5);
+
+          targetFreq = snapToNearestNote(rawFreq, snapStrength);
           targetFreq = constrain(targetFreq, frequencies[0], frequencies[frequencies.length - 1]);
 
           drawHandCircle(leftCircle, leftPoints, color(255, 0, 0));
 
-          oscTriangle.amp(currentVolume * 0.3, 0.05);  // 减少音量变化时间
-          oscSquare.amp(currentVolume * 0.7, 0.05);  // 减少音量变化时间
+          oscTriangle.amp(currentVolume * 0.8, 0.05);  // 减少音量变化时间
+          oscSquare.amp(currentVolume * 0.2, 0.05);  // 减少音量变化时间
 
           // 绘制当前音高指示线
           stroke(255, 0, 0);
@@ -303,8 +313,8 @@
           centerY /= points.length;
 
           // 添加面部粒子效果
-          if (random() < 0.3) {
-            for (let i = 0; i < 5; i++) {
+          if (random() < 0.25) {
+            for (let i = 0; i < 0; i++) {
               faceParticles.push(new FaceParticle(
                 centerX + random(-50, 50),
                 centerY + random(-50, 50)
@@ -346,7 +356,7 @@
       }
 
       // 平滑过渡音高（减少平滑度）
-      currentFreq = lerp(currentFreq, targetFreq, 0.9);
+      currentFreq = lerp(currentFreq, targetFreq, 0.4);
       oscTriangle.freq(currentFreq);
       oscSquare.freq(currentFreq);
     }
@@ -368,14 +378,14 @@
 
             // 减少粒子生成频率，但增加每次生成的数量
             if (random() < 0.005) {
-              for (let i = 0; i < 3; i++) {
+              for (let i = 0; i < 0; i++) {
                 faceParticles.push(new FaceParticle(x, y));
               }
             }
           }
 
           // 绘制面部轮廓
-          stroke(200, 100, 255, 80);
+          stroke(200, 255, 255, 255);
           strokeWeight(2);
           noFill();
 
@@ -398,15 +408,15 @@
     class FaceParticle {
       constructor(x, y) {
         this.x = x + random(-30, 30);
-        this.y = y + random(-30, 30);
+        this.y = y + random(-50, 30);
         this.size = random(60, 100);
-        this.alpha = random(100, 150);
+        this.alpha = random(60, 120);
         this.speed = random(0.1, 0.3);
         this.angle = random(TWO_PI);
         this.color = color(
-          random(180, 255),
-          random(100, 180),
-          random(200, 255),
+          random(150, 255),
+          random(150, 255),
+          random(150, 255),
           this.alpha
         );
       }
@@ -430,7 +440,7 @@
       }
     }
 
-    function snapToNearestNote(freq) {
+    function snapToNearestNote(freq, snapStrength) {
       // 查找最近的音符频率
       let minDiff = Infinity;
       let closestFreq = freq;
@@ -443,18 +453,12 @@
         }
       }
 
-      // 固定吸附强度为 0.01
-      let snapStrength = 0.1;
-
-      // 多次插值以细化过渡
+      // 使用对数插值来实现柔和的吸附
       let logFreq = Math.log2(freq);
       let logClosest = Math.log2(closestFreq);
-      const interpolationSteps = 3; // 插值次数
-      for (let i = 0; i < interpolationSteps; i++) {
-        logFreq = lerp(logFreq, logClosest, snapStrength);
-      }
+      let snappedLogFreq = lerp(logFreq, logClosest, snapStrength);
 
-      return Math.pow(2, logFreq);
+      return Math.pow(2, snappedLogFreq);
     }
   </script>
 </body>
