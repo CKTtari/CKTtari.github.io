@@ -465,7 +465,7 @@
       // 使用对数插值来实现柔和的吸附
       let logFreq = Math.log2(freq);
       let logClosest = Math.log2(closestFreq);
-      let snappedLogFreq = lerp(logFreq, logClosest, snapStrength * 0.5);
+      let snappedLogFreq = lerp(logFreq, logClosest, snapStrength * 0.65);
 
       return Math.pow(2, snappedLogFreq);
     }
