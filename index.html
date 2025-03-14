@@ -75,7 +75,7 @@
 
       await loadDetectors();
       console.log('Hand and face detection models loaded');
-      frameRate(120);
+      frameRate(240);
       this.prevPitchX = 0
     }
 
@@ -365,7 +365,7 @@
       }
 
       // 平滑过渡音高（减少平滑度）
-      currentFreq = lerp(currentFreq, targetFreq, 0.36);
+      currentFreq = lerp(currentFreq, targetFreq, 0.3);
       oscTriangle.freq(currentFreq);
       oscSquare.freq(currentFreq);
     }
