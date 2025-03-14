@@ -211,11 +211,11 @@
 
           drawHandCircle(rightCircle, rightPoints, color(0, 0, 255));
         } else {
-          targetVolume = 0;
+          targetVolume =  0;
         }
 
         // 平滑过渡音量（减少平滑度）
-        currentVolume = lerp(currentVolume, targetVolume, 0.4);
+        currentVolume = lerp(currentVolume, targetVolume, 0.5);
 
         if (leftHand) {
           const leftPoints = [4, 8, 12, 16, 20].map(i => leftHand.keypoints[i]);
