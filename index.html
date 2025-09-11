@@ -5,7 +5,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Hand Instrument</title>
-  <script src="https://cdn.jsdelivr.net/npm/p5"></script>
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.9.0/lib/p5.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.9.0/lib/addons/p5.sound.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/p5/lib/addons/p5.sound.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands"></script>
@@ -17,6 +18,7 @@
 <body>
   <script>
     let capture;
+    let audioUnlocked = false;
     let handDetector;
     let faceDetector;
     let oscTriangle, oscSquare;
@@ -68,17 +70,36 @@
 
       oscTriangle = new p5.Oscillator('triangle');
       oscSquare = new p5.Oscillator('triangle');
-      oscTriangle.start();
-      oscSquare.start();
-      oscTriangle.amp(0, 0.05);
-      oscSquare.amp(0, 0.05);
+      // 不在 setup 里 start，先把振荡器构造好并把音量设为 0
+      // 等用户交互后再 start()
+      oscTriangle.amp(0);
+      oscSquare.amp(0);
+
 
       await loadDetectors();
       console.log('Hand and face detection models loaded');
       frameRate(240);
       this.prevPitchX = 0
     }
-
+    function enableAudioOnce() {
+      if (audioUnlocked) return;
+      // p5 提供的解锁函数，会返回 Promise
+      userStartAudio().then(() => {
+        // 在 audio 上下文可用后启动振荡器
+        oscTriangle.start();
+        oscSquare.start();
+        // 立刻保持静音（避免突兀点击），后面你的逻辑会根据 currentVolume 调整 amp
+        oscTriangle.amp(0, 0.01);
+        oscSquare.amp(0, 0.01);
+        audioUnlocked = true;
+        console.log('audio unlocked');
+      }).catch(err => {
+        console.error('userStartAudio failed:', err);
+      });
+    }
+    function mousePressed() { enableAudioOnce(); }
+    function touchStarted() { enableAudioOnce(); return false; } // 移动端
+    function keyPressed() { enableAudioOnce(); } // 可选：按键也解锁
     async function loadDetectors() {
       // 加载手部识别模型
       const handModel = handPoseDetection.SupportedModels.MediaPipeHands;
