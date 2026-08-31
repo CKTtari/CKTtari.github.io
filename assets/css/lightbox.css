@@ -1,0 +1,30 @@
+.lightbox {
+  position: fixed;
+  z-index: 20;
+  inset: 0;
+  display: none;
+  place-items: center;
+  padding: 28px;
+  background: rgba(0, 0, 0, .88);
+  cursor: zoom-out;
+}
+.lightbox.open { display: grid; }
+.lightbox img {
+  max-width: 94vw;
+  max-height: 92vh;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, .35);
+}
+.lightbox-close {
+  position: fixed;
+  top: 14px;
+  right: 22px;
+  border: 0;
+  background: transparent;
+  color: #fff;
+  font: 30px/1 Arial, sans-serif;
+  cursor: pointer;
+}
+.preview-image { cursor: zoom-in; }

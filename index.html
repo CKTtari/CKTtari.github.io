@@ -59,12 +59,13 @@
       .education li { grid-template-columns: 1fr; gap: 2px; }
     }
   </style>
+  <link rel="stylesheet" href="assets/css/lightbox.css">
 </head>
 <body>
   <div class="modebar"><span class="modes"><a class="active" href="index.html">Academic</a><span class="archive-trigger" aria-hidden="true"></span></span></div>
   <div class="site">
     <aside>
-      <img class="portrait" src="assets/img/profile_photo.jpg" alt="Tianyi Gao profile photo">
+      <img class="portrait" src="assets/img/preview/profile_photo.jpg" data-full="assets/img/profile_photo.jpg" alt="Tianyi Gao profile photo">
       <h1>Tianyi Gao</h1>
       <div class="role">B.Eng. Student in Artificial Intelligence</div>
       <div class="location">Beijing &amp; Tianjin, China</div>
@@ -155,5 +156,6 @@
       archiveTimer = setTimeout(() => { archiveClicks = 0; }, 1500);
     });
   </script>
+  <script src="assets/js/lightbox.js"></script>
 </body>
 </html>
