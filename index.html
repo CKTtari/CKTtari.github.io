@@ -1,496 +1,159 @@
-<!DOCTYPE html>
-<html lang="en">
-
+<!doctype html>
+<html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Hand Instrument</title>
-  <script src="https://cdn.jsdelivr.net/npm/p5@1.9.0/lib/p5.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/p5@1.9.0/lib/addons/p5.sound.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/p5/lib/addons/p5.sound.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/hand-pose-detection"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/face-landmarks-detection"></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Tianyi Gao — personal academic homepage">
+  <title>Tianyi Gao | Homepage</title>
+  <style>
+    :root { --ink: #202020; --muted: #696969; --line: #d9d9d9; --accent: #7b1e1e; --paper: #fff; }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; background: var(--paper); color: var(--ink); font: 16px/1.7 Georgia, "Times New Roman", "Noto Serif SC", serif; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; text-underline-offset: 3px; }
+    .modebar { max-width: 1180px; margin: 0 auto; padding: 22px 34px 0; font: 13px/1.4 Arial, "Noto Sans SC", sans-serif; }
+    .site { max-width: 1180px; margin: 0 auto; padding: 20px 34px 70px; display: grid; grid-template-columns: 255px minmax(0, 1fr); gap: 38px; }
+    aside { position: sticky; top: 36px; align-self: start; }
+    .portrait { width: 200px; height: auto; display: block; margin-bottom: 21px; border: 1px solid var(--line); }
+    h1, h2, h3 { font-family: Arial, "Noto Sans SC", sans-serif; font-weight: 600; letter-spacing: -.02em; }
+    h1 { margin: 0 0 2px; font-size: 28px; }
+    .role, .location { color: var(--muted); font: 14px/1.55 Arial, "Noto Sans SC", sans-serif; }
+    .contact { margin: 19px 0 24px; padding: 0; list-style: none; font: 14px/1.9 Arial, "Noto Sans SC", sans-serif; }
+    nav { border-top: 1px solid var(--line); padding-top: 13px; font: 14px/1.8 Arial, "Noto Sans SC", sans-serif; }
+    nav a { display: block; color: var(--ink); }
+    nav a[aria-current="page"] { color: var(--accent); }
+    main { min-width: 0; }
+    .topline { display: flex; justify-content: space-between; gap: 20px; padding-bottom: 18px; border-bottom: 1px solid var(--line); color: var(--muted); font: 13px/1.4 Arial, "Noto Sans SC", sans-serif; }
+    .modes { display: flex; gap: 16px; }
+    .modes a { color: var(--muted); }
+    .modes a.active { color: var(--ink); font-weight: bold; text-decoration: underline; text-underline-offset: 4px; }
+    .archive-trigger { display: inline-block; width: 58px; height: 18px; cursor: default; vertical-align: middle; }
+    section { padding: 35px 0 3px; }
+    h2 { margin: 0 0 15px; font-size: 22px; }
+    p { margin: 0 0 15px; }
+    .lead { font-size: 18px; line-height: 1.75; }
+    .note { color: var(--muted); font-size: 14px; }
+    time { color: var(--muted); font: 13px/1.65 Arial, "Noto Sans SC", sans-serif; }
+    .research { margin: 0; padding: 0; list-style: none; }
+    .research li { margin: 0 0 18px; padding-left: 18px; border-left: 2px solid var(--ink); }
+    .research strong { display: block; font-family: Arial, "Noto Sans SC", sans-serif; }
+    .pub { padding: 18px 0; border-top: 1px solid var(--line); }
+    .pub:last-child { border-bottom: 1px solid var(--line); }
+    .pub-title { font-weight: bold; }
+    .pub-meta { margin-top: 3px; color: var(--muted); font-size: 14px; }
+    .pub-under-review { color: #929292; }
+    .pub-under-review .pub-title::before { content: "🔒 "; font-size: 13px; }
+    .pub-under-review .pub-meta { color: #929292; }
+    .education { padding: 0; list-style: none; }
+    .education li { display: grid; grid-template-columns: 135px 1fr; gap: 16px; margin-bottom: 13px; }
+    footer { margin-top: 38px; padding-top: 14px; border-top: 1px solid var(--line); color: var(--muted); font: 13px/1.6 Arial, "Noto Sans SC", sans-serif; }
+    @media (max-width: 760px) {
+      .modebar { padding: 16px 22px 0; }
+      .site { display: block; padding: 20px 22px 50px; }
+      aside { position: static; margin-bottom: 34px; }
+      .portrait { width: 100px; height: auto; float: right; margin: 0 0 12px 20px; }
+      nav { clear: both; }
+      .topline { display: none; }
+      section { padding-top: 29px; }
+      .education li { grid-template-columns: 1fr; gap: 2px; }
+    }
+  </style>
 </head>
-
 <body>
+  <div class="modebar"><span class="modes"><a class="active" href="index.html">Academic</a><span class="archive-trigger" aria-hidden="true"></span></span></div>
+  <div class="site">
+    <aside>
+      <img class="portrait" src="assets/img/profile_photo.jpg" alt="Tianyi Gao profile photo">
+      <h1>Tianyi Gao</h1>
+      <div class="role">B.Eng. Student in Artificial Intelligence</div>
+      <div class="location">Beijing &amp; Tianjin, China</div>
+      <ul class="contact">
+        <li><a href="mailto:tygao_bit@163.com">Email</a></li>
+        <li><a href="https://github.com/CKTtari" target="_blank" rel="noreferrer">GitHub</a></li>
+      </ul>
+      <nav aria-label="Main navigation">
+        <a href="#about" aria-current="page">About</a>
+        <a href="#research">Research</a>
+        <a href="#publications">Publications</a>
+        <a href="#education">Education</a>
+        <a href="#awards">Awards</a>
+        <a href="#internship">Internship</a>
+      </nav>
+    </aside>
+
+    <main>
+      <div class="topline"><span>Personal academic homepage</span><span>Last updated: August 2026</span></div>
+      <section id="about">
+        <h2>About me</h2>
+        <p class="lead">I am Tianyi Gao, an undergraduate student in Artificial Intelligence at Beijing Institute of Technology, advised by Prof. Hongchao Qin.</p>
+        <p>My research interests include agent memory, graph data mining, database systems, and agentic search. I am interested in building reliable memory and retrieval systems for agents, especially where graph structure, temporal data, and evidence grounding matter. I believe that the emergent intelligence of AI can better help people discover the value of being human.</p>
+        <p>Feel free to reach out about internship opportunities, research collaborations, exchanging ideas, or simply making a new friend. 😊</p>
+      </section>
+
+      <section id="research">
+        <h2>Research interests</h2>
+        <ul class="research">
+          <li><strong>Agent Memory &amp; Agent Harness Design</strong>Evidence-admissible, temporal, and graph-structured memory mechanisms, together with the context, tool, and execution harnesses that make agents reliable.</li>
+          <li><strong>Graph Data Mining &amp; Database Systems</strong>Efficient query processing and mining over temporal and attributed graph data.</li>
+          <li><strong>Agentic Search</strong>Retrieval, active knowledge acquisition, and search strategies for robust agent reasoning.</li>
+        </ul>
+      </section>
+
+      <section id="publications">
+        <h2>Publications</h2>
+        <article class="pub">
+          <div class="pub-title">Bounded-Memory Aggregate Query Processing on Streaming Temporal Graphs</div>
+          <div class="pub-meta"><strong>Tianyi Gao</strong>, Hongchao Qin, Haotian Jiang, Guang Zeng, and Rong-Hua Li. CIKM 2026, Oral Presentation.</div>
+        </article>
+        <article class="pub">
+          <div class="pub-title">MemDTG: Dynamic Temporal Memory Graphs for Evidence-Admissible Agent Memory</div>
+          <div class="pub-meta">Yaxin Deng, Hongchao Qin, <strong>Tianyi Gao</strong>, Guang Zeng, and Rong-Hua Li. CIKM 2026.</div>
+        </article>
+        <article class="pub pub-under-review">
+          <div class="pub-title">Maximal Semantic Clique Enumeration in Vector-Attributed Graphs</div>
+          <div class="pub-meta"><strong>Tianyi Gao</strong>, et al. · Under review at VLDB</div>
+        </article>
+        <article class="pub pub-under-review">
+          <div class="pub-title">Graph-Aware Out-of-Distribution Detection and Active Knowledge Acquisition for Agent Memory</div>
+          <div class="pub-meta"><strong>Tianyi Gao</strong>, et al. · Under review at WSDM</div>
+        </article>
+      </section>
+
+      <section id="education">
+        <h2>Education</h2>
+        <ul class="education">
+          <li><time>2023.09 — 2027.06</time><span>B.Eng. in Artificial Intelligence, Beijing Institute of Technology.</span></li>
+        </ul>
+      </section>
+
+      <section id="awards">
+        <h2>Awards</h2>
+        <ul class="education">
+          <li><time>2026</time><span>北京市“青创北京”2026年“挑战杯”首都大学生创业计划竞赛专项赛一等奖</span></li>
+          <li><time>2025</time><span>中国高校计算机大赛 AIGC 创新赛全国二等奖</span></li>
+          <li><time>2025</time><span>全国大学生计算机系统能力大赛暨第五届 OceanBase 数据库创新设计赛全国本科生三等奖</span></li>
+        </ul>
+      </section>
+
+      <section id="internship">
+        <h2>Internship</h2>
+        <p>I am currently seeking internship opportunities related to AI agents, especially agent harness design, real-world agent applications, model post-training, and database systems.</p>
+      </section>
+
+      <footer>© 2026 Tianyi Gao. Built as a simple static site.</footer>
+    </main>
+  </div>
   <script>
-    let capture;
-    let audioUnlocked = false;
-    let handDetector;
-    let faceDetector;
-    let oscTriangle, oscSquare;
-    let targetFreq = 0;
-    let currentFreq = 0;
-    let particles = [];
-    let faceParticles = [];
-    let faceMesh;
-    const notes = ['C3', 'C#3', 'D3', 'D#3', 'E3', 'F3', 'F#3', 'G3', 'G#3', 'A3', 'A#3', 'B3',
-      'C4', 'C#4', 'D4', 'D#4', 'E4', 'F4', 'F#4', 'G4', 'G#4', 'A4', 'A#4', 'B4',
-      'C5', 'C#5', 'D5', 'D#5', 'E5', 'F5', 'F#5', 'G5', 'G#5', 'A5', 'A#5', 'B5', 'C6'];
-    const frequencies = [130.81, 138.59, 146.83, 155.56, 164.81, 174.61, 185.00, 196.00, 207.65, 220.00, 233.08, 246.94,
-      261.63, 277.18, 293.66, 311.13, 329.63, 349.23, 369.99, 392.00, 415.30, 440.00, 466.16, 493.88,
-      523.25, 554.37, 587.33, 622.25, 659.25, 698.46, 739.99, 783.99, 830.61, 880.00, 932.33, 987.77, 1046.50];
-
-    class Particle {
-      constructor(x, y, radius) {
-        this.x = x + random(-radius / 2, radius / 2);
-        this.y = y + random(-radius / 2, radius / 2);
-        this.alpha = 255;
-        this.radius = random(2, 5);
-        this.speed = random(0.5, 2);
-        this.angle = random(TWO_PI);
-      }
-
-      update() {
-        this.x += cos(this.angle) * this.speed;
-        this.y += sin(this.angle) * this.speed;
-        this.alpha -= 5;
-      }
-
-      draw() {
-        noStroke();
-        fill(255, 255, 255, this.alpha);
-        ellipse(this.x, this.y, this.radius);
-      }
-
-      isDead() {
-        return this.alpha <= 0;
-      }
-    }
-
-    async function setup() {
-      let canvas = createCanvas(windowWidth, windowHeight);
-      canvas.position(0, 0);
-
-      capture = createCapture(VIDEO);
-      capture.hide();
-
-      oscTriangle = new p5.Oscillator('triangle');
-      oscSquare = new p5.Oscillator('triangle');
-      // 不在 setup 里 start，先把振荡器构造好并把音量设为 0
-      // 等用户交互后再 start()
-      oscTriangle.amp(0);
-      oscSquare.amp(0);
-
-
-      await loadDetectors();
-      console.log('Hand and face detection models loaded');
-      frameRate(240);
-      this.prevPitchX = 0
-    }
-    function enableAudioOnce() {
-      if (audioUnlocked) return;
-      // p5 提供的解锁函数，会返回 Promise
-      userStartAudio().then(() => {
-        // 在 audio 上下文可用后启动振荡器
-        oscTriangle.start();
-        oscSquare.start();
-        // 立刻保持静音（避免突兀点击），后面你的逻辑会根据 currentVolume 调整 amp
-        oscTriangle.amp(0, 0.01);
-        oscSquare.amp(0, 0.01);
-        audioUnlocked = true;
-        console.log('audio unlocked');
-      }).catch(err => {
-        console.error('userStartAudio failed:', err);
-      });
-    }
-    function mousePressed() { enableAudioOnce(); }
-    function touchStarted() { enableAudioOnce(); return false; } // 移动端
-    function keyPressed() { enableAudioOnce(); } // 可选：按键也解锁
-    async function loadDetectors() {
-      // 加载手部识别模型
-      const handModel = handPoseDetection.SupportedModels.MediaPipeHands;
-      const handConfig = {
-        runtime: 'mediapipe',
-        solutionPath: 'https://cdn.jsdelivr.net/npm/@mediapipe/hands/',
-        modelType: 'lite',
-        maxHands: 2
-      };
-      handDetector = await handPoseDetection.createDetector(handModel, handConfig);
-
-      // 加载面部识别模型
-      const faceModel = faceLandmarksDetection.SupportedModels.MediaPipeFaceMesh;
-      const faceConfig = {
-        runtime: 'mediapipe',
-        solutionPath: 'https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/',
-        maxFaces: 1
-      };
-      faceDetector = await faceLandmarksDetection.createDetector(faceModel, faceConfig);
-    }
-
-    function windowResized() {
-      resizeCanvas(windowWidth, windowHeight);
-      capture.size(windowWidth, windowHeight);
-    }
-
-    function frequencyToX(freq) {
-      let logFreq = Math.log2(freq);
-      let logMin = Math.log2(frequencies[0]);
-      let logMax = Math.log2(frequencies[frequencies.length - 1]);
-      return map(logFreq, logMin, logMax, 40, width - 40);
-    }
-
-    function xToFrequency(x) {
-      let logMin = Math.log2(frequencies[0]);
-      let logMax = Math.log2(frequencies[frequencies.length - 1]);
-      let logFreq = map(x, 40, width - 40, logMin, logMax);
-      return Math.pow(2, logFreq);
-    }
-
-    async function draw() {
-      background(0);
-
-      // 计算视频尺寸，使其填满窗口宽度
-      let videoAspect = capture.width / capture.height;
-      let videoW = windowWidth;
-      let videoH = videoW / videoAspect;
-      let videoY = (windowHeight - videoH) / 2;
-
-      // 绘制视频
-      push();
-      translate(videoW, 0);
-      scale(-1, 1);
-      image(capture, 0, videoY, videoW, videoH);
-      pop();
-
-      // 检测并绘制面部特效
-      if (faceDetector && capture.loadedmetadata) {
-        await detectFace(0, videoY, videoW, videoH);
-      }
-
-      // 更新和绘制所有粒子（先绘制面部粒子，确保在底层）
-      updateParticles();
-
-      // 绘制音符刻度和辅助线
-      drawNoteScale();
-
-      if (handDetector && capture.loadedmetadata) {
-        await detectHands(0, videoY, videoW, videoH);
-      }
-    }
-    function drawNoteScale() {
-      push();
-      textAlign(CENTER, BOTTOM);
-      textSize(12);
-
-      for (let i = 0; i < notes.length; i++) {
-        let x = frequencyToX(frequencies[i]);
-
-        // 判断是否为黑键（升调或降调音符）
-        let isBlackKey = notes[i].includes('#');
-
-        // 根据是否为黑键设置线条颜色
-        if (isBlackKey) {
-          stroke(55); // 黑色
-        } else {
-          stroke(200); // 白色
-        }
-
-        // 绘制竖直辅助线
-        line(x, 0, x, height);
-
-        // 绘制音符标签
-        noStroke();
-        fill(255);
-        text(notes[i], x, height - 10);
-      }
-      pop();
-    }
-
-    let targetVolume = 0;
-    let currentVolume = 0;
-
-    async function detectHands(videoX, videoY, videoW, videoH) {
-      if (!handDetector) return;
-      try {
-        const hands = await handDetector.estimateHands(capture.elt);
-        let rightHand = null;
-        let leftHand = null;
-
-        for (let hand of hands) {
-          hand.keypoints = hand.keypoints.map(point => {
-            let x = map(point.x, 0, capture.width, 0, videoW);
-            let y = map(point.y, 0, capture.height, 0, videoH);
-            return {
-              x: videoW - x + videoX,
-              y: y + videoY
-            };
-          });
-
-          if (hand.handedness === 'Right') {
-            rightHand = hand;
-          } else {
-            leftHand = hand;
-          }
-        }
-
-        if (rightHand) {
-          const rightPoints = [4, 8, 12, 16, 20].map(i => rightHand.keypoints[i]);
-          let rightCircle = calculateMinimumBoundingCircle(rightPoints);
-          let area = PI * rightCircle.r * rightCircle.r;
-
-          if (area > 2100) {
-            targetVolume = map(area, 2100, 130000, 0, 0.5);
-            targetVolume = constrain(targetVolume, 0, 0.5);
-          } else {
-            targetVolume = 0;
-          }
-
-          drawHandCircle(rightCircle, rightPoints, color(0, 0, 255));
-        } else {
-          targetVolume = 0;
-        }
-
-        // 平滑过渡音量（减少平滑度）
-        currentVolume = lerp(currentVolume, targetVolume, 0.75);
-
-        if (leftHand) {
-          const leftPoints = [4, 8, 12, 16, 20].map(i => leftHand.keypoints[i]);
-          let leftCircle = calculateMinimumBoundingCircle(leftPoints);
-
-          let rawFreq = xToFrequency(leftCircle.x);
-          // 新增：计算音高 x 位置的位移差
-          let pitchX = leftCircle.x;
-          let deltaX = Math.abs(pitchX - this.prevPitchX);
-          this.prevPitchX = pitchX;
-
-          // 根据位移差调整吸附强度
-          let snapStrength = map(deltaX, 0, 20, 0.5, 0); // 位移差越大，吸附强度越小
-          snapStrength = constrain(snapStrength, 0, 0.5);
-
-          targetFreq = snapToNearestNote(rawFreq, snapStrength);
-          targetFreq = constrain(targetFreq, frequencies[0], frequencies[frequencies.length - 1]);
-
-          drawHandCircle(leftCircle, leftPoints, color(255, 0, 0));
-
-          oscTriangle.amp(currentVolume * 0.8, 0.05);  // 减少音量变化时间
-          oscSquare.amp(currentVolume * 0.2, 0.05);  // 减少音量变化时间
-
-          // 绘制当前音高指示线
-          stroke(255, 0, 0);
-          line(leftCircle.x, 0, leftCircle.x, height);
-        }
-
-        if (!rightHand && !leftHand) {
-          oscTriangle.amp(0, 0.05);  // 减少音量变化时间
-          oscSquare.amp(0, 0.05);  // 减少音量变化时间
-        }
-
-      } catch (error) {
-        console.error(error);
-      }
-    }
-
-    function drawHandCircle(circle, points, circleColor) {
-      // 绘制手部关键点
-      for (let point of points) {
-        fill(255);
-        noStroke();
-        ellipse(point.x, point.y, 10, 10);
-      }
-
-      // 绘制包围圆
-      noFill();
-      stroke(circleColor);
-      ellipse(circle.x, circle.y, circle.r * 1.5);
-
-      // 添加粒子效果
-      if (random() < 0.4) {
-        particles.push(new Particle(circle.x, circle.y, circle.r));
-      }
-    }
-
-    function calculateMinimumBoundingCircle(points) {
-      if (points.length === 0) return { x: 0, y: 0, r: 0 };
-
-      // 计算点的中心
-      let centerX = points.reduce((sum, p) => sum + p.x, 0) / points.length;
-      let centerY = points.reduce((sum, p) => sum + p.y, 0) / points.length;
-
-      // 计算最大半径
-      let maxRadius = 0;
-      for (let point of points) {
-        let distance = dist(centerX, centerY, point.x, point.y);
-        maxRadius = max(maxRadius, distance);
-      }
-
-      return {
-        x: centerX,
-        y: centerY,
-        r: maxRadius
-      };
-    }
-
-    function onFaceResults(results) {
-      if (results.multiFaceLandmarks) {
-        for (const landmarks of results.multiFaceLandmarks) {
-          // 转换坐标到画布空间
-          const points = landmarks.map(point => ({
-            x: point.x * width,
-            y: point.y * height
-          }));
-
-          // 计算面部中心
-          let centerX = 0, centerY = 0;
-          for (let point of points) {
-            centerX += point.x;
-            centerY += point.y;
-          }
-          centerX /= points.length;
-          centerY /= points.length;
-
-          // 添加面部粒子效果
-          if (random() < 0.25) {
-            for (let i = 0; i < 0; i++) {
-              faceParticles.push(new FaceParticle(
-                centerX + random(-50, 50),
-                centerY + random(-50, 50)
-              ));
-            }
-          }
-
-          // 绘制面部网格特效
-          push();
-          stroke(200, 100, 255, 100);
-          noFill();
-          beginShape(POINTS);
-          for (let i = 0; i < points.length; i += 3) {
-            vertex(points[i].x, points[i].y);
-          }
-          endShape();
-          pop();
-        }
-      }
-    }
-
-    function updateParticles() {
-      // 更新和绘制手部粒子
-      for (let i = particles.length - 1; i >= 0; i--) {
-        particles[i].update();
-        particles[i].draw();
-        if (particles[i].isDead()) {
-          particles.splice(i, 1);
-        }
-      }
-
-      // 更新和绘制面部粒子
-      for (let i = faceParticles.length - 1; i >= 0; i--) {
-        faceParticles[i].update();
-        faceParticles[i].draw();
-        if (faceParticles[i].isDead()) {
-          faceParticles.splice(i, 1);
-        }
-      }
-
-      // 平滑过渡音高（减少平滑度）
-      currentFreq = lerp(currentFreq, targetFreq, 0.3);
-      oscTriangle.freq(currentFreq);
-      oscSquare.freq(currentFreq);
-    }
-
-    async function detectFace(videoX, videoY, videoW, videoH) {
-      if (!faceDetector) return;
-      try {
-        const faces = await faceDetector.estimateFaces(capture.elt, {
-          flipHorizontal: false
-        });
-
-        for (let face of faces) {
-          // 绘制面部网格
-          for (let keypoint of face.keypoints) {
-            let x = map(keypoint.x, 0, capture.width, 0, videoW);
-            let y = map(keypoint.y, 0, capture.height, 0, videoH);
-            x = videoW - x; // 镜像修正
-            y = y + videoY;
-
-            // 减少粒子生成频率，但增加每次生成的数量
-            if (random() < 0.005) {
-              for (let i = 0; i < 0; i++) {
-                faceParticles.push(new FaceParticle(x, y));
-              }
-            }
-          }
-
-          // 绘制面部轮廓
-          stroke(200, 255, 255, 255);
-          strokeWeight(2);
-          noFill();
-
-          let silhouettePoints = face.keypoints.filter((_, i) => i % 5 === 0);
-          beginShape();
-          for (let point of silhouettePoints) {
-            let x = map(point.x, 0, capture.width, 0, videoW);
-            let y = map(point.y, 0, capture.height, 0, videoH);
-            x = videoW - x;
-            y = y + videoY;
-            vertex(x, y);
-          }
-          endShape(CLOSE);
-        }
-      } catch (error) {
-        console.error('Face detection error:', error);
-      }
-    }
-
-    class FaceParticle {
-      constructor(x, y) {
-        this.x = x + random(-30, 30);
-        this.y = y + random(-50, 30);
-        this.size = random(60, 100);
-        this.alpha = random(60, 120);
-        this.speed = random(0.1, 0.3);
-        this.angle = random(TWO_PI);
-        this.color = color(
-          random(150, 255),
-          random(150, 255),
-          random(150, 255),
-          this.alpha
-        );
-      }
-
-      update() {
-        this.x += cos(this.angle) * this.speed;
-        this.y += sin(this.angle) * this.speed;
-        this.alpha -= 1;
-        this.size *= 0.995;
-        this.color.setAlpha(this.alpha);
-      }
-
-      draw() {
-        noStroke();
-        fill(this.color);
-        ellipse(this.x, this.y, this.size);
-      }
-
-      isDead() {
-        return this.alpha <= 0 || this.size < 20;
-      }
-    }
-
-    function snapToNearestNote(freq, snapStrength) {
-      // 查找最近的音符频率
-      let minDiff = Infinity;
-      let closestFreq = freq;
-
-      for (let noteFreq of frequencies) {
-        let diff = Math.abs(Math.log2(freq) - Math.log2(noteFreq));
-        if (diff < minDiff) {
-          minDiff = diff;
-          closestFreq = noteFreq;
-        }
-      }
-
-      // 使用对数插值来实现柔和的吸附
-      let logFreq = Math.log2(freq);
-      let logClosest = Math.log2(closestFreq);
-      let snappedLogFreq = lerp(logFreq, logClosest, snapStrength * 0.6);
-
-      return Math.pow(2, snappedLogFreq);
-    }
+    const archiveTrigger = document.querySelector('.archive-trigger');
+    let archiveClicks = 0;
+    let archiveTimer;
+    archiveTrigger.addEventListener('click', () => {
+      archiveClicks += 1;
+      clearTimeout(archiveTimer);
+      if (archiveClicks === 5) window.location.href = 'archive.html';
+      archiveTimer = setTimeout(() => { archiveClicks = 0; }, 1500);
+    });
   </script>
 </body>
-
 </html>

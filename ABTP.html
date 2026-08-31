@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>阿巴阿巴吐泡泡</title>
+  <!-- 引入 p5.js 库 -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.min.js"></script>
+  <!-- 引入 MediaPipe face_mesh 库 -->
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.min.js"></script>
+  <!-- 引入 MediaPipe camera_utils 库 -->
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
+</head>
+
+<body>
+  <script>
+    // 全局变量定义
+    let video;                           // 视频流对象
+    let faceMesh;                        // Face Mesh 模型对象
+    let detections = null;               // 存储检测到的人脸关键点数据
+    let camera;                          // 摄像头对象（用于处理视频帧）
+    let balls = [];                      // 存储所有小球
+    let gameZone = { x: 160, y: 40, w: 308, h: 400 };  // 游戏区域位置和尺寸
+    let gameOver = false;                // 游戏是否结束
+    let gameOverTimer = 0;               // 游戏结束计时器
+    let warningLineY;                    // 预警线Y坐标
+    let ballLifetimes = new Map();       // 记录每个球的生成时间
+    let score = 0;                       // 游戏分数
+    let eliminationCount = 0;            // 消除计数
+    let currentShape = [];               // 当前形状
+    let shapeRotation = 0;               // 形状旋转角度
+    let shapePreview = [];               // 形状预览位置
+    let eliminationEffects = [];         // 存储消除特效
+    let shapeTypes = [                   // 俄罗斯方块形状定义
+      [[0, 0], [1, 0], [0, 1], [1, 1]],     // 方块
+      [[0, 0], [0, 1], [0, 2], [0, 3]],     // 直线
+      [[0, 0], [0, 1], [1, 1], [1, 2]],     // Z形
+      [[1, 0], [1, 1], [0, 1], [0, 2]],     // S形
+      [[0, 0], [0, 1], [0, 2], [1, 1]],     // T形
+      [[0, 0], [0, 1], [0, 2], [1, 0]],     // L形
+      [[0, 0], [0, 1], [0, 2], [1, 2]]      // J形
+    ];
+
+    // --- 小球物理参数 ---
+    const BALL_RADIUS = 14;              // 小球半径
+    const GRAVITY = 0.75;                 // 重力加速度
+    const FRICTION = 0.95;               // 摩擦力
+    const MIN_VELOCITY = 0.05;           // 最小速度阈值
+    const WALL_STICKINESS = 0.8;         // 板边粘性系数
+    const SAFE_MARGIN = BALL_RADIUS * 3; // 安全边界（增加安全范围）
+    const ELIMINATION_DURATION = 30;     // 消除特效持续时间
+
+    // --- 小球颜色 ---
+    const BALL_COLORS = [
+      [255, 0, 0],    // 红色
+      [0, 255, 0],    // 绿色
+      [0, 0, 255]     // 蓝色
+    ];
+    let currentColorIndex = 0;           // 当前颜色索引
+
+    // --- 张嘴检测相关 ---
+    let MOUTH_OPEN_THRESHOLD = 0.05;    // 默认张嘴阈值
+    let MOUTH_CLOSE_THRESHOLD = 0.02;   // 闭嘴阈值
+    let mouthState = 'closed';          // 当前嘴巴状态：'open' 或 'closed'
+
+    // --- 滑动条相关 ---
+    let openSlider, closeSlider;        // 滑动条对象
+    let sliderWidth = 150;              // 滑动条宽度
+    let sliderSpacing = 30;             // 滑动条间距
+
+    // 消除特效类
+    class EliminationEffect {
+      constructor(x, y, color) {
+        this.x = x;
+        this.y = y;
+        this.color = color;
+        this.particles = [];
+        this.life = ELIMINATION_DURATION;
+
+        // 创建粒子
+        for (let i = 0; i < 12; i++) {
+          const angle = random(TWO_PI);
+          const speed = random(1, 3);
+          this.particles.push({
+            x: this.x,
+            y: this.y,
+            vx: cos(angle) * speed,
+            vy: sin(angle) * speed,
+            size: random(3, 6)
+          });
+        }
+      }
+
+      update() {
+        this.life--;
+        for (let particle of this.particles) {
+          particle.x += particle.vx;
+          particle.y += particle.vy;
+          particle.vx *= 0.95;
+          particle.vy *= 0.95;
+        }
+      }
+
+      draw() {
+        const alpha = map(this.life, 0, ELIMINATION_DURATION, 0, 255);
+        for (let particle of this.particles) {
+          fill(this.color[0], this.color[1], this.color[2], alpha);
+          noStroke();
+          ellipse(particle.x, particle.y, particle.size);
+        }
+      }
+
+      isDead() {
+        return this.life <= 0;
+      }
+    }
+
+    // Ball 类：表示一个小球
+    class Ball {
+      constructor(x, y, color, init_v) {
+        this.x = x;
+        this.y = y;
+        this.vx = 0;
+        this.vy = init_v;
+        this.color = color;
+        this.radius = BALL_RADIUS;
+        this.scale = 0;                 // 初始缩放比例
+        this.growing = true;            // 是否在生长
+        this.canCollide = false;        // 是否可以碰撞
+        this.createdAt = millis();      // 记录创建时间
+        this.connectedCount = 0;        // 相连的同色小球数量
+        this.visited = false;           // 用于路径搜索
+        this.isNew = true;              // 是否是新生成的球
+      }
+
+      // 计算相连的同色小球数量
+      calculateConnectedCount() {
+        // 新生成的球不参与连接计算
+        if (this.isNew) return;
+
+        // 重置所有球的访问状态
+        for (let ball of balls) {
+          if (!ball.isNew) {
+            ball.visited = false;
+          }
+        }
+
+        // 使用深度优先搜索计算连通组大小
+        const dfs = (ball) => {
+          if (ball.visited || ball.isNew) return 0;
+          ball.visited = true;
+          let count = 1;
+
+          for (let other of balls) {
+            if (other !== ball && !other.visited && !other.isNew &&
+              other.color.join(',') === ball.color.join(',') &&
+              this.isConnected(ball, other)) {
+              count += dfs(other);
+            }
+          }
+          return count;
+        };
+
+        this.connectedCount = dfs(this) - 1; // 减去自己
+      }
+
+      // 检查两个球是否相连
+      isConnected(ball1, ball2) {
+        // 新生成的球不参与连接
+        if (ball1.isNew || ball2.isNew) return false;
+
+        let dx = ball1.x - ball2.x;
+        let dy = ball1.y - ball2.y;
+        return Math.sqrt(dx * dx + dy * dy) < BALL_RADIUS * 2.2;
+      }
+
+      update() {
+        // 更新缩放效果
+        if (this.growing) {
+          this.scale += 0.1;
+          if (this.scale >= 1) {
+            this.scale = 1;
+            this.growing = false;
+          }
+        }
+
+        // 应用重力
+        this.vy += GRAVITY;
+
+        // 当速度为正时启用碰撞
+        if (this.vy > 0) {
+          this.canCollide = true;
+        }
+
+        // 应用摩擦力
+        this.vx *= FRICTION;
+        this.vy *= FRICTION;
+
+        // 当速度很小时停止移动
+        if (Math.abs(this.vx) < MIN_VELOCITY) this.vx = 0;
+        if (Math.abs(this.vy) < MIN_VELOCITY) this.vy = 0;
+
+        // 更新位置
+        this.x += this.vx;
+        this.y += this.vy;
+
+        // 边界碰撞检测
+        if (this.canCollide) {
+          // 左边界碰撞
+          if (this.x - this.radius < gameZone.x) {
+            this.x = gameZone.x + this.radius;
+            this.vx = -this.vx * 0.5; // 反弹并损失一些能量
+          }
+          // 右边界碰撞
+          if (this.x + this.radius > gameZone.x + gameZone.w) {
+            this.x = gameZone.x + gameZone.w - this.radius;
+            this.vx = -this.vx * 0.5; // 反弹并损失一些能量
+          }
+          // 底部碰撞（只有底部有粘性）
+          if (this.y + this.radius > gameZone.y + gameZone.h) {
+            this.y = gameZone.y + gameZone.h - this.radius;
+            this.vx = 0;
+            this.vy = 0;
+            // 增加底部粘性
+            this.y -= (this.y - (gameZone.y + gameZone.h - this.radius)) * WALL_STICKINESS;
+          }
+
+          // 小球之间的碰撞检测
+          for (let other of balls) {
+            if (other !== this && other.canCollide && !other.isNew) {
+              let dx = other.x - this.x;
+              let dy = other.y - this.y;
+              let distance = Math.sqrt(dx * dx + dy * dy);
+              let minDist = this.radius + other.radius;
+
+              if (distance < minDist) {
+                // 计算重叠深度
+                let overlap = minDist - distance;
+
+                // 计算碰撞法线
+                let nx = dx / distance;
+                let ny = dy / distance;
+
+                // 分离小球（严格防止重叠）
+                let moveX = (overlap * nx) / 2;
+                let moveY = (overlap * ny) / 2;
+
+                this.x -= moveX;
+                this.y -= moveY;
+                other.x += moveX;
+                other.y += moveY;
+
+                // 计算相对速度
+                let relativeVx = this.vx - other.vx;
+                let relativeVy = this.vy - other.vy;
+
+                // 计算法向速度
+                let normalVelocity = relativeVx * nx + relativeVy * ny;
+
+                // 如果小球在相互靠近，则应用碰撞响应
+                if (normalVelocity < 0) {
+                  // 计算碰撞后的法向速度
+                  let restitution = 0.5; // 恢复系数
+                  let j = -(1 + restitution) * normalVelocity;
+
+                  // 更新速度（只改变法向分量）
+                  this.vx += j * nx;
+                  this.vy += j * ny;
+                  other.vx -= j * nx;
+                  other.vy -= j * ny;
+                }
+
+                // 增加小球之间的粘性（只影响法向速度）
+                let normalSpeed = Math.sqrt(this.vx * this.vx + this.vy * this.vy);
+                if (normalSpeed > 0) {
+                  let normalVx = this.vx / normalSpeed;
+                  let normalVy = this.vy / normalSpeed;
+                  this.vx -= normalVx * normalSpeed * WALL_STICKINESS;
+                  this.vy -= normalVy * normalSpeed * WALL_STICKINESS;
+                }
+              }
+            }
+          }
+        }
+
+        // 检查是否已经过了生成保护期
+        if (this.isNew && millis() - this.createdAt > 500) {
+          this.isNew = false;
+        }
+      }
+
+      draw() {
+        // 绘制玻璃球效果
+        push();
+        noStroke();
+
+        // 应用缩放
+        translate(this.x, this.y);
+        scale(this.scale);
+        translate(-this.x, -this.y);
+
+        // 绘制基础球体
+        fill(this.color[0], this.color[1], this.color[2], 200);
+        ellipse(this.x, this.y, this.radius * 2);
+
+        // 绘制高光
+        fill(255, 255, 255, 100);
+        ellipse(this.x - this.radius / 3, this.y - this.radius / 3, this.radius / 2);
+
+        // 绘制描边
+        stroke(255);
+        strokeWeight(1);
+        noFill();
+        ellipse(this.x, this.y, this.radius * 2);
+
+        // 绘制连接数
+        if (this.connectedCount > 0) {
+          fill(255);
+          noStroke();
+          textSize(12);
+          textAlign(CENTER, CENTER);
+          text(this.connectedCount + 1, this.x, this.y);
+        }
+
+        pop();
+      }
+    }
+
+    // setup()：初始化画布、视频和 Face Mesh
+    function setup() {
+      createCanvas(640, 480);
+      video = createCapture(VIDEO);
+      video.size(width, height);
+      video.hide();
+
+      // 计算预警线位置
+      warningLineY = gameZone.y + gameZone.h / 3;
+
+      // 创建滑动条（调整位置）
+      const sliderRightMargin = 10;  // 右侧边距
+      const sliderBottomMargin = 70; // 底部边距
+      const sliderSpacing = 40;      // 滑动条间距
+
+      openSlider = createSlider(0.01, 0.15, MOUTH_OPEN_THRESHOLD, 0.01);
+      openSlider.position(sliderRightMargin, height - sliderBottomMargin);
+      openSlider.style('width', sliderWidth + 'px');
+
+      closeSlider = createSlider(0.01, 0.15, MOUTH_CLOSE_THRESHOLD, 0.01);
+      closeSlider.position(sliderRightMargin, height - sliderBottomMargin + sliderSpacing);
+      closeSlider.style('width', sliderWidth + 'px');
+
+      // 初始化第一个形状
+      generateNewShape();
+
+      faceMesh = new FaceMesh({
+        locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}`
+      });
+      faceMesh.setOptions({
+        maxNumFaces: 1,
+        refineLandmarks: true,
+        minDetectionConfidence: 0.5,
+        minTrackingConfidence: 0.5
+      });
+      faceMesh.onResults(onFaceResults);
+
+      camera = new Camera(video.elt, {
+        onFrame: async () => await faceMesh.send({ image: video.elt }),
+        width: width,
+        height: height
+      });
+      camera.start();
+    }
+
+    // 生成新形状
+    function generateNewShape() {
+      // 随机选择形状
+      const shapeType = shapeTypes[Math.floor(Math.random() * shapeTypes.length)];
+      currentShape = shapeType;
+      shapePreview = shapeType;
+      shapeRotation = 0;
+      // 随机选择颜色
+      currentColorIndex = Math.floor(Math.random() * BALL_COLORS.length);
+    }
+
+    // 生成小球组
+    function generateBallGroup(x, y) {
+      // 确保生成位置在安全范围内
+      const safeX = constrain(x, gameZone.x + SAFE_MARGIN, gameZone.x + gameZone.w - SAFE_MARGIN);
+      const safeY = constrain(y, gameZone.y + SAFE_MARGIN, gameZone.y + gameZone.h - SAFE_MARGIN);
+
+      // 计算形状的中心点
+      let centerOffsetX = 0;
+      let centerOffsetY = 0;
+      for (let pos of currentShape) {
+        centerOffsetX += pos[0];
+        centerOffsetY += pos[1];
+      }
+      centerOffsetX = centerOffsetX / currentShape.length * BALL_RADIUS * 2;
+      centerOffsetY = centerOffsetY / currentShape.length * BALL_RADIUS * 2;
+
+      for (let pos of currentShape) {
+        // 计算旋转后的位置（相对于中心点）
+        const rotatedX = (pos[0] * BALL_RADIUS * 2 - centerOffsetX) * cos(shapeRotation) -
+          (pos[1] * BALL_RADIUS * 2 - centerOffsetY) * sin(shapeRotation);
+        const rotatedY = (pos[0] * BALL_RADIUS * 2 - centerOffsetX) * sin(shapeRotation) +
+          (pos[1] * BALL_RADIUS * 2 - centerOffsetY) * cos(shapeRotation);
+
+        // 生成小球
+        balls.push(new Ball(
+          safeX + rotatedX,
+          safeY + rotatedY,
+          BALL_COLORS[currentColorIndex],
+          -24 * 0.5 - (y) * 0.05
+        ));
+      }
+
+      // 生成新形状
+      generateNewShape();
+    }
+
+    // onFaceResults()：保存人脸关键点数据
+    function onFaceResults(results) {
+      detections = results.multiFaceLandmarks[0] || null;
+    }
+
+    // updateMouthState()：检测嘴巴开合状态并生成小球
+    function updateMouthState() {
+      if (!detections || gameOver) return;
+      const mouthTop = detections[13];
+      const mouthBottom = detections[14];
+      const mouthOpenness = dist(mouthTop.x, mouthTop.y, mouthBottom.x, mouthBottom.y);
+
+      // 更新阈值
+      MOUTH_OPEN_THRESHOLD = openSlider.value();
+      MOUTH_CLOSE_THRESHOLD = closeSlider.value();
+
+      // 更新嘴巴状态（使用上下阈值）
+      if (mouthOpenness > MOUTH_OPEN_THRESHOLD && mouthState === 'closed') {
+        mouthState = 'open';
+      } else if (mouthOpenness < MOUTH_CLOSE_THRESHOLD && mouthState === 'open') {
+        mouthState = 'closed';
+        // 生成新小球组
+        const mouthX = width * (1 - mouthBottom.x);
+        const mouthY = height * mouthBottom.y;
+
+        // 检查嘴巴位置是否在游戏区域内
+        if (mouthX >= gameZone.x && mouthX <= gameZone.x + gameZone.w &&
+          mouthY >= gameZone.y && mouthY <= gameZone.y + gameZone.h) {
+          generateBallGroup(mouthX, mouthY);
+        }
+      }
+
+      // 更新形状旋转
+      shapeRotation += 0.04;
+    }
+
+    // drawFaceLandmarks()：绘制嘴巴轮廓
+    function drawFaceLandmarks() {
+      push();
+      translate(width, 0);
+      scale(-1, 1);
+      const mouthTop = detections[13];
+      const mouthBottom = detections[14];
+      const mouthOpen = dist(mouthTop.x, mouthTop.y, mouthBottom.x, mouthBottom.y) > MOUTH_OPEN_THRESHOLD;
+
+      // 绘制圆形指示器
+      const mouthX = width * (1 - mouthBottom.x);
+      const mouthY = height * mouthBottom.y;
+      const indicatorRadius = 20;
+
+      // 绘制当前颜色的小球指示器（圆环）
+      const currentColor = BALL_COLORS[currentColorIndex];
+      noFill();
+      stroke(currentColor[0], currentColor[1], currentColor[2], 200);
+      strokeWeight(2);
+      ellipse(640 - mouthX, mouthY, indicatorRadius * 2);
+
+      pop();
+    }
+
+    // mousePressed()：处理鼠标点击事件
+    function mousePressed() {
+      if (gameOver) return;
+
+      // 检查点击位置是否在游戏区域内
+      if (mouseX >= gameZone.x && mouseX <= gameZone.x + gameZone.w &&
+        mouseY >= gameZone.y && mouseY <= gameZone.y + gameZone.h) {
+        generateBallGroup(mouseX, mouseY);
+      }
+    }
+
+    // draw()：主绘制循环
+    function draw() {
+      background(0);
+      // 绘制镜像视频
+      push();
+      translate(width, 0);
+      scale(-1, 1);
+      image(video, 0, 0, width, height);
+      pop();
+
+      // 绘制游戏区域外的遮罩（先绘制遮罩）
+      fill(0, 0, 0, 150);
+      noStroke();
+      // 左侧遮罩
+      rect(0, 0, gameZone.x, height);
+      // 右侧遮罩
+      rect(gameZone.x + gameZone.w, 0, width - (gameZone.x + gameZone.w), height);
+      // 顶部遮罩
+      rect(0, 0, width, gameZone.y);
+      // 底部遮罩
+      rect(0, gameZone.y + gameZone.h, width, height - (gameZone.y + gameZone.h));
+
+      // 绘制游戏标题
+      fill(255);
+      textSize(24);
+      textAlign(LEFT, TOP);
+      textStyle(BOLD);
+      text("阿巴吐泡", 10, 10);
+
+      // 绘制分数和消除计数
+      textSize(16);
+      textAlign(RIGHT, TOP);
+      text(`分数: ${score}`, width - 15, 10);
+      text(`消除: ${eliminationCount}`, width - 15, 30);
+
+      // 绘制游戏区域边框（发光效果）
+      const currentColor = BALL_COLORS[currentColorIndex];
+      for (let i = 0; i < 5; i++) {
+        stroke(currentColor[0], currentColor[1], currentColor[2], 100 - i * 20);
+        strokeWeight(4 - i * 0.5);
+        noFill();
+        rect(gameZone.x - i, gameZone.y - i, gameZone.w + i * 2, gameZone.h + i * 2);
+      }
+
+      // 绘制预警线
+      stroke(255, 0, 0);
+      strokeWeight(1);
+      line(gameZone.x, warningLineY, gameZone.x + gameZone.w, warningLineY);
+
+      // 绘制形状预览
+      if (shapePreview.length > 0) {
+        push();
+        // 计算预览形状的中心点
+        let centerOffsetX = 0;
+        let centerOffsetY = 0;
+        for (let pos of shapePreview) {
+          centerOffsetX += pos[0];
+          centerOffsetY += pos[1];
+        }
+        centerOffsetX = centerOffsetX / shapePreview.length * BALL_RADIUS * 2;
+        centerOffsetY = centerOffsetY / shapePreview.length * BALL_RADIUS * 2;
+
+        translate(gameZone.x + gameZone.w / 2, gameZone.y + gameZone.h / 6);
+        rotate(shapeRotation);
+        for (let pos of shapePreview) {
+          fill(currentColor[0], currentColor[1], currentColor[2], 100);
+          noStroke();
+          ellipse(pos[0] * BALL_RADIUS * 2 - centerOffsetX,
+            pos[1] * BALL_RADIUS * 2 - centerOffsetY,
+            BALL_RADIUS * 2);
+        }
+        pop();
+      }
+
+      if (detections) {
+        updateMouthState();
+        drawFaceLandmarks();
+        drawDebugInfo();
+      }
+
+      // 更新和绘制所有小球
+      for (let ball of balls) {
+        ball.update();
+        ball.calculateConnectedCount();
+        ball.draw();
+
+        // 检查游戏是否结束
+        if (!gameOver && ball.canCollide && millis() - ball.createdAt > 3000) {
+          if (ball.y < warningLineY) {
+            gameOver = true;
+            gameOverTimer = millis(); // 记录游戏结束时间
+          }
+        }
+      }
+
+      checkLines();
+
+      // 更新和绘制消除特效
+      for (let i = eliminationEffects.length - 1; i >= 0; i--) {
+        eliminationEffects[i].update();
+        eliminationEffects[i].draw();
+        if (eliminationEffects[i].isDead()) {
+          eliminationEffects.splice(i, 1);
+        }
+      }
+
+      if (gameOver) {
+        // 计算剩余时间
+        let timeLeft = 5 - (millis() - gameOverTimer) / 1000;
+        if (timeLeft > 0) {
+          fill(255, 0, 0);
+          textSize(48);
+          textAlign(CENTER, CENTER);
+          text("GAME OVER", width / 2, height / 2);
+          textSize(24);
+          text(`游戏将在 ${timeLeft.toFixed(1)} 秒后重新开始`, width / 2, height / 2 + 50);
+        } else {
+          // 重置游戏状态
+          gameOver = false;
+          balls = [];
+          eliminationEffects = [];
+          score = 0;
+          eliminationCount = 0;
+          generateNewShape();
+        }
+      }
+    }
+
+    // 添加帧计数器
+    let frameCount = 0;
+    const CHECK_INTERVAL = 10;  // 每5帧检查一次
+
+    // checkLines()：检查并消除符合条件的行
+    function checkLines() {
+      // 帧数控制
+      frameCount++;
+      if (frameCount % CHECK_INTERVAL !== 0) return;
+
+      // 按颜色分组
+      let colorGroups = {};
+      for (let ball of balls) {
+        if (!ball.isNew) {  // 新生成的球不参与消除
+          let colorKey = ball.color.join(',');
+          if (!colorGroups[colorKey]) {
+            colorGroups[colorKey] = [];
+          }
+          colorGroups[colorKey].push(ball);
+        }
+      }
+
+      // 检查每个颜色组
+      for (let colorKey in colorGroups) {
+        let group = colorGroups[colorKey];
+        let minX = gameZone.x + BALL_RADIUS;
+        let maxX = gameZone.x + gameZone.w - BALL_RADIUS;
+
+        // 重置所有球的访问状态
+        for (let ball of balls) {
+          ball.visited = false;
+        }
+
+        // 对每个球进行深度优先搜索，找出所有连通组
+        for (let startBall of group) {
+          if (!startBall.visited) {
+            let connectedGroup = [];
+
+            // 使用深度优先搜索找出连通组
+            const dfs = (ball) => {
+              if (ball.visited) return;
+              ball.visited = true;
+              connectedGroup.push(ball);
+
+              for (let other of group) {
+                if (!other.visited && ball.isConnected(ball, other)) {
+                  dfs(other);
+                }
+              }
+            };
+
+            dfs(startBall);
+
+            // 检查这个连通组是否满足消除条件
+            if (connectedGroup.length > 0) {
+              // 初始化最左和最右的球
+              let leftmost = connectedGroup[0];
+              let rightmost = connectedGroup[0];
+
+              // 遍历组内所有球，找出真正的最左和最右的球
+              for (let ball of connectedGroup) {
+                if (ball.x < leftmost.x) {
+                  leftmost = ball;
+                }
+                if (ball.x > rightmost.x) {
+                  rightmost = ball;
+                }
+              }
+
+              // 检查是否接触到左右边界（增加容差）
+              let leftTouches = Math.abs(leftmost.x - minX) < 8;
+              let rightTouches = Math.abs(rightmost.x - maxX) < 8;
+
+              if (leftTouches && rightTouches) {
+                // 为每个被消除的球创建特效
+                for (let ball of connectedGroup) {
+                  eliminationEffects.push(new EliminationEffect(ball.x, ball.y, ball.color));
+                }
+
+                // 消除这个连通组
+                balls = balls.filter(b => !connectedGroup.includes(b));
+                // 更新分数和消除计数
+                eliminationCount++;
+                score += eliminationCount * 100 + 1000;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    // drawDebugInfo()：绘制调试信息（移动到左下角）
+    function drawDebugInfo() {
+      if (!detections) return;
+
+      const mouthTop = detections[13];
+      const mouthBottom = detections[14];
+      const mouthOpenness = dist(mouthTop.x, mouthTop.y, mouthBottom.x, mouthBottom.y);
+
+      // 绘制半透明背景
+      fill(0, 0, 0, 150);
+      noStroke();
+
+      // 绘制文字
+      fill(255);
+      noStroke();
+      textSize(16);
+      textAlign(LEFT);
+      textStyle(BOLD);
+      text(`张口度: ${(mouthOpenness * 10).toFixed(2)}`, 10, height - 200);
+      text(`张口阈值: ${(MOUTH_OPEN_THRESHOLD * 10).toFixed(2)}`, 10, height - 175);
+      text(`闭口阈值: ${(MOUTH_CLOSE_THRESHOLD * 10).toFixed(2)}`, 10, height - 150);
+      text(`嘴巴状态: ${mouthState}`, 10, height - 125);
+      text(`张口阈值调节:`, 10, height - 95);
+      text(`闭口阈值调节:`, 10, height - 55);
+    }
+  </script>
+</body>
+</html>

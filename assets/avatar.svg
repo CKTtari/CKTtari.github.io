@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" role="img" aria-label="Replace with your profile photo">
+  <rect width="500" height="500" fill="#efefeb"/>
+  <circle cx="250" cy="180" r="78" fill="#c6c6bf"/>
+  <path d="M105 470c13-123 84-187 145-187s132 64 145 187" fill="#c6c6bf"/>
+  <text x="250" y="455" fill="#74746f" font-family="Arial, sans-serif" font-size="23" text-anchor="middle">REPLACE PHOTO</text>
+</svg>
