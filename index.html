@@ -28,7 +28,9 @@
     .modes { display: flex; gap: 16px; }
     .modes a { color: var(--muted); }
     .modes a.active { color: var(--ink); font-weight: bold; text-decoration: underline; text-underline-offset: 4px; }
-    .archive-trigger { display: inline-block; width: 58px; height: 18px; cursor: default; vertical-align: middle; }
+    .archive-trigger { display: inline-block; width: 58px; height: 18px; cursor: pointer; vertical-align: middle; }
+    .archive-trigger::after { content: "▣"; display: inline-block; color: var(--muted); opacity: 0; transition: opacity .15s ease; }
+    .archive-trigger:hover::after, .archive-trigger:focus::after { opacity: 1; }
     section { padding: 35px 0 3px; }
     h2 { margin: 0 0 15px; font-size: 22px; }
     p { margin: 0 0 15px; }
@@ -45,6 +47,10 @@
     .pub-under-review { color: #929292; }
     .pub-under-review .pub-title::before { content: "🔒 "; font-size: 13px; }
     .pub-under-review .pub-meta { color: #929292; }
+    .pub-abstract { max-height: 0; margin-top: 0; overflow: hidden; color: #4f4f4f; opacity: 0; font: 14px/1.65 Arial, "Noto Sans SC", sans-serif; transition: max-height .38s ease, margin-top .28s ease, opacity .28s ease; }
+    .pub:hover .pub-abstract, .pub:focus-within .pub-abstract { max-height: 500px; margin-top: 10px; opacity: 1; }
+    .pub-abstract strong { color: var(--ink); font-weight: 700; }
+    .pub-abstract p { display: inline; margin: 0; }
     .education { padding: 0; list-style: none; }
     .education li { display: grid; grid-template-columns: 135px 1fr; gap: 16px; margin-bottom: 13px; }
     footer { margin-top: 38px; padding-top: 14px; border-top: 1px solid var(--line); color: var(--muted); font: 13px/1.6 Arial, "Noto Sans SC", sans-serif; }
@@ -62,7 +68,7 @@
   <link rel="stylesheet" href="assets/css/lightbox.css">
 </head>
 <body>
-  <div class="modebar"><span class="modes"><a class="active" href="index.html">Academic</a><span class="archive-trigger" aria-hidden="true"></span></span></div>
+  <div class="modebar"><span class="modes"><a class="active" href="index.html">Academic</a><span class="archive-trigger" role="link" tabindex="0" aria-label="Open Archive" title="Open Archive"></span></span></div>
   <div class="site">
     <aside>
       <img class="portrait" src="assets/img/preview/profile_photo.jpg" data-full="assets/img/profile_photo.jpg" alt="Tianyi Gao profile photo">
@@ -106,10 +112,12 @@
         <article class="pub">
           <div class="pub-title">Bounded-Memory Aggregate Query Processing on Streaming Temporal Graphs</div>
           <div class="pub-meta"><strong>Tianyi Gao</strong>, Hongchao Qin, Haotian Jiang, Guang Zeng, and Rong-Hua Li. CIKM 2026, Oral Presentation.</div>
+          <div class="pub-abstract"><strong>Abstract:</strong> <p>Time-window aggregate queries over temporal graph streams are important for agent memory, communication monitoring, and knowledge-base analytics, but exact processing becomes costly as timestamped edges accumulate. We propose CAMRS, a budget-decoupled multi-resolution sketch that assigns fine-grained CMS buckets and coarse HLL segments according to their different budget needs. Space-Saving label tracking further supports label-filtered predicates. A closed-form COUNT error bound shows that temporal resolution is the key accuracy lever and enables a reliability-aware exact fallback. On six real-world temporal graphs with 60K–17.8M edges, CAMRS reduces COUNT error by up to 29.7× and predicate error by up to 7.9×, while reducing worst-case tail error by up to 667×.</p></div>
         </article>
         <article class="pub">
           <div class="pub-title">MemDTG: Dynamic Temporal Memory Graphs for Evidence-Admissible Agent Memory</div>
           <div class="pub-meta">Yaxin Deng, Hongchao Qin, <strong>Tianyi Gao</strong>, Guang Zeng, and Rong-Hua Li. CIKM 2026.</div>
+          <div class="pub-abstract"><strong>Abstract:</strong> <p>Long-term agent memory is an online, non-monotonic retrieval problem: new interactions may reinforce, contradict, supersede, specialize, or expire earlier memories. We propose MemDTG, a dynamic temporal memory graph that treats memory as temporal evidence admission. It separates immutable episodes from a mutable entity–state graph and a memory-evolution graph over assertion versions. A slot-local resolver and deterministic commit rules update lifecycle states, valid intervals, and typed evolution edges. At read time, query constraints are compiled before ranking, and QV-CTW retrieves evidence only inside the legal temporal subgraph. Evidence certificates record selected facts, sources, roles, and rejected alternatives. On LongMemEval and LoCoMo, MemDTG achieves the best LLM-judge accuracy and Citation F1, reducing stale-answer errors by 61.7% and future leaks by 80.1%.</p></div>
         </article>
         <article class="pub pub-under-review">
           <div class="pub-title">Maximal Semantic Clique Enumeration in Vector-Attributed Graphs</div>
@@ -124,7 +132,7 @@
       <section id="education">
         <h2>Education</h2>
         <ul class="education">
-          <li><time>2023.09 — 2027.06</time><span>B.Eng. in Artificial Intelligence, Beijing Institute of Technology.</span></li>
+          <li><time>2023.09 — 2027.06</time><span>B.Eng. in Artificial Intelligence, Beijing Institute of Technology.<br>GPA: 3.7 / 4.0</span></li>
         </ul>
       </section>
 
@@ -147,13 +155,9 @@
   </div>
   <script>
     const archiveTrigger = document.querySelector('.archive-trigger');
-    let archiveClicks = 0;
-    let archiveTimer;
-    archiveTrigger.addEventListener('click', () => {
-      archiveClicks += 1;
-      clearTimeout(archiveTimer);
-      if (archiveClicks === 5) window.location.href = 'archive.html';
-      archiveTimer = setTimeout(() => { archiveClicks = 0; }, 1500);
+    archiveTrigger.addEventListener('click', () => { window.location.href = 'archive.html'; });
+    archiveTrigger.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); window.location.href = 'archive.html'; }
     });
   </script>
   <script src="assets/js/lightbox.js"></script>

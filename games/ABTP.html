@@ -1,13 +1,17 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>阿巴阿巴吐泡泡</title>
+  <title>阿巴吐泡</title>
   <!-- 引入 p5.js 库 -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.min.js"></script>
   <!-- 引入 MediaPipe face_mesh 库 -->
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.min.js"></script>
   <!-- 引入 MediaPipe camera_utils 库 -->
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
+  <style>
+    html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; background: #000; }
+    canvas { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); }
+  </style>
 </head>
 
 <body>
