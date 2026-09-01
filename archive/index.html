@@ -20,21 +20,24 @@
     main { min-width:0; }.topline { display:flex; justify-content:space-between; gap:20px; padding-bottom:18px; border-bottom:1px solid var(--line); color:var(--muted); font:13px/1.4 Arial,"Noto Sans SC",sans-serif; }
     .modes { display:flex; gap:16px; }.modes a { color:var(--muted); }.modes a.active { color:var(--ink); font-weight:bold; text-decoration:underline; text-underline-offset:4px; }
     section { padding-top:36px; }.archive-section { display:none; }.archive-section.active { display:block; }.intro { font-size:18px; }.eyebrow { color:var(--muted); font:13px/1.5 Arial,"Noto Sans SC",sans-serif; text-transform:uppercase; letter-spacing:.06em; }
+    .archive-section h2 + .eyebrow { margin-top:-12px; }
     .posts { border-top:1px solid var(--line); }.post { display:grid; grid-template-columns:110px 1fr; gap:18px; padding:17px 0; border-bottom:1px solid var(--line); }.post h3 { margin:0; font-size:18px; }.post p { margin:4px 0 0; color:var(--muted); font-size:14px; }
     .album-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:15px; }.album { min-height:180px; padding:14px; display:flex; flex-direction:column; justify-content:flex-end; border:1px solid var(--line); background:linear-gradient(145deg,#d6d2ca,#f7f5f0 56%,#a7a099); color:#1d1d1d; text-align:left; cursor:pointer; font:inherit; }.album.active { outline:2px solid var(--ink); outline-offset:-4px; }.album:nth-child(2) { background:linear-gradient(145deg,#9eafbd,#edf0ef 58%,#55646b); }.album:nth-child(3) { background:linear-gradient(145deg,#b59985,#f2e6d6 58%,#746258); }.album strong { font-family:Arial,"Noto Sans SC",sans-serif; }.album span { font:12px Arial,"Noto Sans SC",sans-serif; }
     .photo-row { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-top:8px; }.photo { aspect-ratio:1; border:1px solid var(--line); background:repeating-linear-gradient(135deg,#e8e8e4 0 12px,#d3d3ce 12px 24px); display:grid; place-items:center; color:var(--muted); font:12px Arial,"Noto Sans SC",sans-serif; }
-    .music { display:grid; grid-template-columns:repeat(3,1fr); gap:22px; }.record { position:relative; aspect-ratio:1; overflow:hidden; background:linear-gradient(145deg,#29262a,#8c1b2f 49%,#e7cb9b); }.record:nth-child(2) { background:linear-gradient(145deg,#6e8c99,#f0d9b2 52%,#1c3848); }.record:nth-child(3) { background:linear-gradient(145deg,#dad6ca,#8c8273 49%,#272b2d); }.record::after { content:""; position:absolute; inset:15%; border:1px solid rgba(255,255,255,.65); border-radius:50%; }.record-info { position:absolute; inset:0; display:flex; flex-direction:column; justify-content:flex-end; padding:15px; background:rgba(20,20,20,.86); color:#fff; opacity:0; transition:opacity .2s ease; font:13px/1.5 Arial,"Noto Sans SC",sans-serif; }.record:hover .record-info,.record:focus-within .record-info { opacity:1; }.record-info strong { font-size:16px; }
+    .music-heading { margin:28px 0 12px; font-size:16px; }.music { display:grid; grid-template-columns:repeat(3,1fr); gap:22px; }.record { position:relative; aspect-ratio:1; overflow:hidden; background:linear-gradient(145deg,#29262a,#8c1b2f 49%,#e7cb9b); }.record:nth-child(2) { background:linear-gradient(145deg,#6e8c99,#f0d9b2 52%,#1c3848); }.record:nth-child(3) { background:linear-gradient(145deg,#dad6ca,#8c8273 49%,#272b2d); }.record::after { content:""; position:absolute; inset:15%; border:1px solid rgba(255,255,255,.65); border-radius:50%; }.record-info { position:absolute; inset:0; display:flex; flex-direction:column; justify-content:flex-end; padding:15px; background:rgba(20,20,20,.86); color:#fff; opacity:0; transition:opacity .2s ease; font:13px/1.5 Arial,"Noto Sans SC",sans-serif; }.record:hover .record-info,.record:focus-within .record-info { opacity:1; }.record-info strong { font-size:16px; }
     .quotes,.others { display:grid; grid-template-columns:repeat(2,1fr); gap:15px; }.quote,.other { min-height:150px; padding:20px; border:1px solid var(--line); display:flex; flex-direction:column; justify-content:space-between; }.quote { font-size:20px; line-height:1.55; }.quote cite,.other small { color:var(--muted); font:12px Arial,"Noto Sans SC",sans-serif; font-style:normal; }.other { color:var(--ink); text-decoration:none; }.other:hover { border-color:var(--ink); text-decoration:none; }.other h3 { margin:0; font-size:17px; }.other p { margin:7px 0; color:var(--muted); font-size:14px; }
-    .quote-carousel { position:relative; min-height:270px; display:grid; grid-template-columns:1fr minmax(280px, 560px) 1fr; align-items:center; gap:22px; overflow:hidden; }
-    .quote-slide { min-height:150px; padding:20px; border:1px solid var(--line); display:flex; flex-direction:column; justify-content:space-between; font-size:18px; line-height:1.55; transition:opacity .25s ease, filter .25s ease, transform .25s ease; }
-    .quote-slide.side { opacity:.28; filter:blur(4px); transform:scale(.9); }
+    .quote-carousel { position:relative; min-height:444px; overflow:hidden; }
+    .quote-slide { position:absolute; top:50%; left:50%; width:min(816px, 100%); height:324px; min-width:0; margin:0; padding:30px 58px; overflow:hidden; border:1px solid var(--line); display:flex; flex-direction:column; justify-content:center; font-size:20px; line-height:1.7; transition:opacity .3s ease, filter .3s ease, transform .3s ease; transform:translate(-50%, -50%); }
+    .quote-slide[data-quote="current"] { z-index:2; }
+    .quote-slide.side { display:none; }
     .quote-slide.empty { visibility:hidden; }
-    .quote-slide cite { color:var(--muted); font:12px Arial,"Noto Sans SC",sans-serif; font-style:normal; }
-    .quote-controls { display:flex; justify-content:center; gap:30px; margin-top:14px; }
-    .quote-controls button { border:0; padding:4px 12px; background:transparent; color:var(--ink); font:22px/1 Arial,sans-serif; cursor:pointer; }
+    .quote-slide cite { position:absolute; right:58px; bottom:22px; left:58px; color:var(--muted); font:12px Arial,"Noto Sans SC",sans-serif; font-style:normal; text-align:right; }
+    .quote-text { margin:0; overflow:hidden; white-space:pre-wrap; word-break:break-word; }
+    .quote-controls { position:absolute; z-index:3; top:50%; left:50%; width:min(816px, 100%); display:flex; justify-content:space-between; pointer-events:none; transform:translate(-50%, -50%); }
+    .quote-controls button { width:38px; height:46px; border:0; padding:0; background:transparent; color:var(--ink); font:24px/1 Arial,sans-serif; cursor:pointer; pointer-events:auto; }
     .quote-controls button:hover { color:var(--accent); }
     footer { margin-top:42px; padding-top:14px; border-top:1px solid var(--line); color:var(--muted); font:13px Arial,"Noto Sans SC",sans-serif; }
-    @media(max-width:760px) { .modebar { padding:16px 22px 0; }.site { display:block; padding:20px 22px 50px; } aside { position:static; margin-bottom:30px; }.topline { font-size:12px; }.album-grid,.music { grid-template-columns:repeat(2,1fr); }.photo-row { grid-template-columns:repeat(2,1fr); }.post { grid-template-columns:1fr; gap:3px; }.quotes,.others { grid-template-columns:1fr; }.quote-carousel { grid-template-columns:34px minmax(0,1fr) 34px; gap:5px; }.quote-slide.side { opacity:.18; filter:blur(3px); transform:scale(.82); }.quote-slide { padding:15px; font-size:17px; } }
+    @media(max-width:760px) { .modebar { padding:16px 22px 0; }.site { display:block; padding:20px 22px 50px; } aside { position:static; margin-bottom:30px; }.topline { font-size:12px; }.album-grid,.music { grid-template-columns:repeat(2,1fr); }.photo-row { grid-template-columns:repeat(2,1fr); }.post { grid-template-columns:1fr; gap:3px; }.quotes,.others { grid-template-columns:1fr; }.quote-carousel { min-height:400px; }.quote-slide { width:100%; height:288px; padding:22px 48px; font-size:18px; }.quote-slide cite { right:48px; bottom:18px; left:48px; }.quote-controls { width:100%; }.quote-controls button { width:34px; } }
   </style>
   <link rel="stylesheet" href="../assets/css/lightbox.css">
 </head>
@@ -43,26 +46,25 @@
   <div class="site">
     <aside>
       <nav aria-label="Archive navigation">
-        <a class="active" href="#writing" data-target="writing">文章</a>
-        <a href="#photos" data-target="photos">相册</a>
-        <a href="#music" data-target="music">音乐</a>
+        <a class="active" href="#photos" data-target="photos">相册</a>
         <a href="#words" data-target="words">字句</a>
+        <a href="#music" data-target="music">音乐</a>
+        <a href="#writing" data-target="writing">文章</a>
         <a href="#other" data-target="other">其他</a>
         <a href="../">← 学术主页</a>
       </nav>
       <div class="social-links" aria-label="Social links">
         <a href="https://space.bilibili.com/33266404?spm_id_from=333.1007.0.0" target="_blank" rel="noreferrer">Bilibili</a>
         <a href="https://music.163.com/#/user/home?id=408944720" target="_blank" rel="noreferrer">NetEase Cloud Music</a>
-        <a href="https://www.douban.com/people/180277548/?_i=8172333Y27fZzV,8172502Y27fZzV" target="_blank" rel="noreferrer">Douban</a>
         <a href="https://www.xiaohongshu.com/user/profile/63cac9ff0000000026013aa4" target="_blank" rel="noreferrer">Xiaohongshu</a>
       </div>
     </aside>
     <main>
-      <section class="archive-section active" id="writing"><div class="eyebrow">文章</div><h2>文章</h2><div class="posts"><article class="post"><time>—</time><div><h3>文章标题</h3><p>待填写。</p></div></article></div></section>
-      <section class="archive-section" id="photos"><div class="eyebrow">相册</div><h2>相册</h2><div class="album-grid"><button class="album active" type="button" data-album="相册"><strong>相册 01</strong><span>待填写</span></button><button class="album" type="button" data-album="相册"><strong>相册 02</strong><span>待填写</span></button><button class="album" type="button" data-album="相册"><strong>相册 03</strong><span>待填写</span></button></div><div class="photo-row" aria-live="polite"><div class="photo">图片</div><div class="photo">图片</div><div class="photo">图片</div><div class="photo">图片</div></div></section>
-      <section class="archive-section" id="music"><div class="eyebrow">音乐</div><h2>音乐</h2><p class="note">鼠标悬停在封面上查看详细信息。</p><div class="music"><article class="record" tabindex="0"><div class="record-info"><strong>专辑名称</strong><span>待填写</span></div></article><article class="record" tabindex="0"><div class="record-info"><strong>专辑名称</strong><span>待填写</span></div></article><article class="record" tabindex="0"><div class="record-info"><strong>专辑名称</strong><span>待填写</span></div></article></div></section>
-      <section class="archive-section" id="words"><div class="eyebrow">字句</div><h2>字句</h2><div class="quote-carousel"><div class="quote-slide side" data-quote="previous"></div><blockquote class="quote-slide" data-quote="current">“…”<cite>待填写</cite></blockquote><div class="quote-slide side" data-quote="next"></div></div><div class="quote-controls"><button type="button" data-quote-step="-1" aria-label="上一句">←</button><button type="button" data-quote-step="1" aria-label="下一句">→</button></div></section>
-      <section class="archive-section" id="other"><div class="eyebrow">其他</div><h2>其他</h2><div class="others"><a class="other" href="https://store.steampowered.com/app/1700220/__Ultimate_Vitality_of_Imagination/" target="_blank" rel="noreferrer"><h3>东方远空界 ～ Ultimate Vitality of Imagination</h3><p>高中时做的东方二次同人游戏，承载了当时的一些幻想。</p><small>前往 Steam →</small></a><a class="other" href="../games/ABTP.html"><h3>阿巴吐泡</h3><p>一个通过摄像头互动的小游戏。</p><small>打开游戏 →</small></a><a class="other" href="../games/hand-instrument.html"><h3>虚拟特雷门琴</h3><p>一个通过摄像头进行声音实验的作品。</p><small>打开游戏 →</small></a><article class="other"><h3>标题</h3><p>待填写。</p><small>待填写</small></article></div></section>
+      <section class="archive-section" id="writing"><h2>文章</h2><div class="eyebrow">记录一些想法和故事</div><div class="posts"><article class="post"><time>—</time><div><h3>文章标题</h3><p>待填写。</p></div></article></div></section>
+      <section class="archive-section active" id="photos"><h2>相册</h2><div class="eyebrow">拍的照片，一些喜欢的。</div><div class="album-grid"><button class="album active" type="button" data-album="相册"><strong>相册 01</strong><span>待填写</span></button><button class="album" type="button" data-album="相册"><strong>相册 02</strong><span>待填写</span></button><button class="album" type="button" data-album="相册"><strong>相册 03</strong><span>待填写</span></button></div><div class="photo-row" aria-live="polite"><div class="photo">图片</div><div class="photo">图片</div><div class="photo">图片</div><div class="photo">图片</div></div></section>
+      <section class="archive-section" id="music"><h2>音乐</h2><div class="eyebrow">喜欢的一些音乐</div><h3 class="music-heading">最近喜欢</h3><div class="music"><article class="record" tabindex="0"><div class="record-info"><strong>名称</strong><span>单曲 · 待填写</span></div></article><article class="record" tabindex="0"><div class="record-info"><strong>名称</strong><span>EP · 待填写</span></div></article><article class="record" tabindex="0"><div class="record-info"><strong>名称</strong><span>专辑 · 待填写</span></div></article></div><h3 class="music-heading">最爱</h3><div class="music"><article class="record" tabindex="0"><div class="record-info"><strong>名称</strong><span>单曲 · 待填写</span></div></article><article class="record" tabindex="0"><div class="record-info"><strong>名称</strong><span>EP · 待填写</span></div></article><article class="record" tabindex="0"><div class="record-info"><strong>名称</strong><span>专辑 · 待填写</span></div></article></div></section>
+      <section class="archive-section" id="words"><h2>字句</h2><div class="eyebrow">记录随心写下和摘抄的句子</div><div class="quote-carousel"><div class="quote-slide side" data-quote="previous"><p class="quote-text"></p><cite></cite></div><blockquote class="quote-slide" data-quote="current"><p class="quote-text">正在加载……</p><cite></cite></blockquote><div class="quote-slide side" data-quote="next"><p class="quote-text"></p><cite></cite></div><div class="quote-controls"><button type="button" data-quote-step="-1" aria-label="上一句">←</button><button type="button" data-quote-step="1" aria-label="下一句">→</button></div></div></section>
+      <section class="archive-section" id="other"><h2>其他</h2><div class="eyebrow">一些难以归类的东西</div><div class="others"><a class="other" href="https://store.steampowered.com/app/1700220/__Ultimate_Vitality_of_Imagination/" target="_blank" rel="noreferrer"><h3>东方远空界 ～ Ultimate Vitality of Imagination</h3><p>高中时做的东方二次同人游戏，承载了当时的一些幻想。</p><small>前往 Steam →</small></a><a class="other" href="../games/ABTP.html"><h3>阿巴吐泡</h3><p>一个通过摄像头互动的小游戏。</p><small>打开游戏 →</small></a><a class="other" href="../games/hand-instrument.html"><h3>虚拟特雷门琴</h3><p>一个通过摄像头进行声音实验的作品。</p><small>打开游戏 →</small></a><article class="other"><h3>标题</h3><p>待填写。</p><small>待填写</small></article></div></section>
       <footer>© 2026 Tianyi Gao.</footer>
     </main>
   </div>
@@ -74,27 +76,46 @@
         document.querySelectorAll('.archive-section').forEach((section) => section.classList.toggle('active', section.id === link.dataset.target));
       });
     });
-    const quoteItems = [
-      { text: '…', source: 'To be added' },
-      { text: '…', source: 'To be added' },
-      { text: '…', source: 'To be added' },
-      { text: '…', source: 'To be added' }
-    ].sort(() => Math.random() - 0.5);
+    let quoteItems = [];
     let quoteIndex = 0;
     const quotePrevious = document.querySelector('[data-quote="previous"]');
     const quoteCurrent = document.querySelector('[data-quote="current"]');
     const quoteNext = document.querySelector('[data-quote="next"]');
     function renderQuote() {
+      if (!quoteItems.length) return;
       const item = (offset) => quoteItems[(quoteIndex + offset + quoteItems.length) % quoteItems.length];
-      const render = (element, value) => { element.innerHTML = `“${value.text}”<cite>${value.source}</cite>`; };
+      const render = (element, value) => {
+        element.querySelector('.quote-text').textContent = value.text.join('\n');
+        element.querySelector('cite').textContent = value.source ? `— ${value.source}` : '';
+      };
       render(quotePrevious, item(-1));
       render(quoteCurrent, item(0));
       render(quoteNext, item(1));
     }
+    function shuffleQuotes(items) {
+      const shuffled = [...items];
+      for (let i = shuffled.length - 1; i > 0; i -= 1) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+      }
+      return shuffled;
+    }
     document.querySelectorAll('[data-quote-step]').forEach((button) => {
-      button.addEventListener('click', () => { quoteIndex = (quoteIndex + Number(button.dataset.quoteStep) + quoteItems.length) % quoteItems.length; renderQuote(); });
+      button.addEventListener('click', () => {
+        if (!quoteItems.length) return;
+        const step = Number(button.dataset.quoteStep);
+        quoteIndex = (quoteIndex + step + quoteItems.length) % quoteItems.length;
+        renderQuote();
+      });
     });
-    renderQuote();
+    fetch('words/quotes.json')
+      .then((response) => { if (!response.ok) throw new Error('Unable to load quotes'); return response.json(); })
+      .then((quotes) => {
+        quoteItems = shuffleQuotes(quotes);
+        quoteIndex = 0;
+        renderQuote();
+      })
+      .catch(() => { quoteCurrent.querySelector('.quote-text').textContent = '字句暂时无法加载。'; });
     document.querySelectorAll('.album').forEach((album) => {
       album.addEventListener('click', () => {
         document.querySelectorAll('.album').forEach((item) => item.classList.toggle('active', item === album));

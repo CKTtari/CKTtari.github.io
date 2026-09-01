@@ -1,3 +1,15 @@
-# Words
+# 字句
 
-Place quotations, poems, and other short writing for the Archive here.
+网页从 `quotes.json` 读取卡片内容。每一项是一张卡片：
+
+```json
+{
+  "text": ["第一行", "第二行"],
+  "source": "作者或出处"
+}
+```
+
+- `text` 必须是字符串数组；数组中的每一项会按原样换行显示。
+- 自己写的字句不要写 `source` 字段，网页不会显示出处。
+- 有出处时填写 `source`，网页会在卡片底部显示 `— 作者或出处`。
+- 新增时在 `quotes.json` 的最外层数组中添加一项，并确保相邻项之间有逗号。
