@@ -19,7 +19,9 @@
     .social-links { margin-top:27px; padding-top:13px; border-top:1px solid var(--line); font:13px/2 Arial,"Noto Sans SC",sans-serif; }.social-links a { display:block; color:var(--muted); }.social-links a:hover { color:var(--accent); }
     main { min-width:0; }.topline { display:flex; justify-content:space-between; gap:20px; padding-bottom:18px; border-bottom:1px solid var(--line); color:var(--muted); font:13px/1.4 Arial,"Noto Sans SC",sans-serif; }
     .modes { display:flex; gap:16px; }.modes a { color:var(--muted); }.modes a.active { color:var(--ink); font-weight:bold; text-decoration:underline; text-underline-offset:4px; }
-    section { padding-top:36px; }.archive-section { display:none; }.archive-section.active { display:block; }.intro { font-size:18px; }.eyebrow { color:var(--muted); font:13px/1.5 Arial,"Noto Sans SC",sans-serif; text-transform:uppercase; letter-spacing:.06em; }
+    .archive-note { margin:0 0 14px; padding-top:13px; border-top:1px solid var(--line); color:var(--muted); font:14px/1.65 Arial,"Noto Sans SC",sans-serif; }
+    .archive-note span { display:block; }
+    section { padding-top:0; }.archive-section { display:none; }.archive-section.active { display:block; }.intro { font-size:18px; }.eyebrow { color:var(--muted); font:13px/1.5 Arial,"Noto Sans SC",sans-serif; text-transform:uppercase; letter-spacing:.06em; }
     .archive-section h2 + .eyebrow { margin-top:-12px; }
     .archive-section > .eyebrow + * { margin-top:26px; }
     .posts { border-top:1px solid var(--line); }.post { display:grid; grid-template-columns:110px 1fr; gap:18px; padding:17px 0; border-bottom:1px solid var(--line); }.post h3 { margin:0; font-size:18px; }.post p { margin:4px 0 0; color:var(--muted); font-size:14px; }
@@ -46,12 +48,13 @@
   <div class="modebar"><span class="modes"><a href="../">Academic</a></span></div>
   <div class="site">
     <aside>
+      <p class="archive-note"><span>爱天空，爱海洋</span><span>生活需要丰富的感受与表达</span></p>
       <nav aria-label="Archive navigation">
-        <a class="active" href="#photos" data-target="photos">相册</a>
-        <a href="#words" data-target="words">字句</a>
-        <a href="#music" data-target="music">音乐</a>
-        <a href="#writing" data-target="writing">文章</a>
-        <a href="#other" data-target="other">其他</a>
+        <a class="active" href="#photos" data-target="photos">Photos</a>
+        <a href="#words" data-target="words">Words</a>
+        <a href="#music" data-target="music">Music</a>
+        <a href="#writing" data-target="writing">Writing</a>
+        <a href="#other" data-target="other">Other</a>
         <a href="../">← 学术主页</a>
       </nav>
       <div class="social-links" aria-label="Social links">
@@ -61,11 +64,11 @@
       </div>
     </aside>
     <main>
-      <section class="archive-section" id="writing"><h2>文章</h2><div class="eyebrow">记录一些想法和故事</div><div class="posts"><article class="post"><time>—</time><div><h3>文章标题</h3><p>待填写。</p></div></article></div></section>
-      <section class="archive-section active" id="photos"><h2>相册</h2><div class="eyebrow">拍的照片，一些喜欢的。</div><div class="album-grid"><button class="album active" type="button" data-album="相册"><strong>相册 01</strong><span>待填写</span></button><button class="album" type="button" data-album="相册"><strong>相册 02</strong><span>待填写</span></button><button class="album" type="button" data-album="相册"><strong>相册 03</strong><span>待填写</span></button></div><div class="photo-row" aria-live="polite"><div class="photo">图片</div><div class="photo">图片</div><div class="photo">图片</div><div class="photo">图片</div></div></section>
-      <section class="archive-section" id="music"><h2>音乐</h2><div class="eyebrow">喜欢的一些音乐</div><h3 class="music-heading">最近喜欢</h3><div class="music"><article class="record" tabindex="0"><div class="record-info"><strong>名称</strong><span>单曲 · 待填写</span></div></article><article class="record" tabindex="0"><div class="record-info"><strong>名称</strong><span>EP · 待填写</span></div></article><article class="record" tabindex="0"><div class="record-info"><strong>名称</strong><span>专辑 · 待填写</span></div></article></div><h3 class="music-heading">最爱</h3><div class="music"><article class="record" tabindex="0"><div class="record-info"><strong>名称</strong><span>单曲 · 待填写</span></div></article><article class="record" tabindex="0"><div class="record-info"><strong>名称</strong><span>EP · 待填写</span></div></article><article class="record" tabindex="0"><div class="record-info"><strong>名称</strong><span>专辑 · 待填写</span></div></article></div></section>
-      <section class="archive-section" id="words"><h2>字句</h2><div class="eyebrow">记录随心写下和摘抄的句子</div><div class="quote-carousel"><div class="quote-slide side" data-quote="previous"><p class="quote-text"></p><cite></cite></div><blockquote class="quote-slide" data-quote="current"><p class="quote-text">正在加载……</p><cite></cite></blockquote><div class="quote-slide side" data-quote="next"><p class="quote-text"></p><cite></cite></div><div class="quote-controls"><button type="button" data-quote-step="-1" aria-label="上一句">←</button><button type="button" data-quote-step="1" aria-label="下一句">→</button></div></div></section>
-      <section class="archive-section" id="other"><h2>其他</h2><div class="eyebrow">一些难以归类的东西</div><div class="others" id="other-items"></div></section>
+      <section class="archive-section" id="writing"><h2>Writing</h2><div class="eyebrow">记录一些想法和故事</div><div class="posts"><article class="post"><time>—</time><div><h3>文章标题</h3><p>待填写。</p></div></article></div></section>
+      <section class="archive-section active" id="photos"><h2>Photos</h2><div class="eyebrow">拍的照片，一些喜欢的。</div><div class="album-grid"><button class="album active" type="button" data-album="相册"><strong>相册 01</strong><span>待填写</span></button><button class="album" type="button" data-album="相册"><strong>相册 02</strong><span>待填写</span></button><button class="album" type="button" data-album="相册"><strong>相册 03</strong><span>待填写</span></button></div><div class="photo-row" aria-live="polite"><div class="photo">图片</div><div class="photo">图片</div><div class="photo">图片</div><div class="photo">图片</div></div></section>
+      <section class="archive-section" id="music"><h2>Music</h2><div class="eyebrow">喜欢的一些音乐</div><h3 class="music-heading">最近喜欢</h3><div class="music"><article class="record" tabindex="0"><div class="record-info"><strong>名称</strong><span>单曲 · 待填写</span></div></article><article class="record" tabindex="0"><div class="record-info"><strong>名称</strong><span>EP · 待填写</span></div></article><article class="record" tabindex="0"><div class="record-info"><strong>名称</strong><span>专辑 · 待填写</span></div></article></div><h3 class="music-heading">最爱</h3><div class="music"><article class="record" tabindex="0"><div class="record-info"><strong>名称</strong><span>单曲 · 待填写</span></div></article><article class="record" tabindex="0"><div class="record-info"><strong>名称</strong><span>EP · 待填写</span></div></article><article class="record" tabindex="0"><div class="record-info"><strong>名称</strong><span>专辑 · 待填写</span></div></article></div></section>
+      <section class="archive-section" id="words"><h2>Words</h2><div class="eyebrow">记录随心写下和摘抄的句子</div><div class="quote-carousel"><div class="quote-slide side" data-quote="previous"><p class="quote-text"></p><cite></cite></div><blockquote class="quote-slide" data-quote="current"><p class="quote-text">正在加载……</p><cite></cite></blockquote><div class="quote-slide side" data-quote="next"><p class="quote-text"></p><cite></cite></div><div class="quote-controls"><button type="button" data-quote-step="-1" aria-label="上一句">←</button><button type="button" data-quote-step="1" aria-label="下一句">→</button></div></div></section>
+      <section class="archive-section" id="other"><h2>Other</h2><div class="eyebrow">一些难以归类的东西</div><div class="others" id="other-items"></div></section>
       <footer>© 2026 Tianyi Gao.</footer>
     </main>
   </div>

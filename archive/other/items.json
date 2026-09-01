@@ -17,5 +17,12 @@
     "description": "一个通过摄像头进行声音实验的作品。",
     "label": "打开游戏 →",
     "url": "../games/hand-instrument.html"
+  },
+  {
+    "title": "bunnies / min heejin 粉丝",
+    "description": "喜欢原生newjeans",
+    "label": "前往网站 →",
+    "url": "https://ooak-records.com/",
+    "external": true
   }
 ]
