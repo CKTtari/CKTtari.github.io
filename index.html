@@ -12,26 +12,27 @@
     body { margin: 0; background: var(--paper); color: var(--ink); font: 16px/1.7 Georgia, "Times New Roman", "Noto Serif SC", serif; }
     a { color: var(--accent); text-decoration: none; }
     a:hover { text-decoration: underline; text-underline-offset: 3px; }
-    .modebar { max-width: 1180px; margin: 0 auto; padding: 22px 34px 0; font: 13px/1.4 Arial, "Noto Sans SC", sans-serif; }
-    .site { max-width: 1180px; margin: 0 auto; padding: 20px 34px 70px; display: grid; grid-template-columns: 255px minmax(0, 1fr); gap: 38px; }
+    .modebar { min-height: 64px; display: flex; align-items: center; border: 0; background: #fff; font: 26px/1.2 "Palatino Linotype", "Book Antiqua", Palatino, Georgia, serif; }
+    .modebar .modes { width: min(1180px, 100%); margin: 0 auto; padding: 0 34px; }
+    .site { max-width: 1180px; margin: 0 auto; padding: 16px 34px 70px; display: grid; grid-template-columns: 255px minmax(0, 1fr); gap: 38px; }
     aside { position: sticky; top: 36px; align-self: start; }
     .portrait { width: 200px; height: auto; display: block; margin-bottom: 21px; border: 1px solid var(--line); }
     h1, h2, h3 { font-family: Arial, "Noto Sans SC", sans-serif; font-weight: 600; letter-spacing: -.02em; }
     h1 { margin: 0 0 2px; font-size: 28px; }
     .role, .location { color: var(--muted); font: 14px/1.55 Arial, "Noto Sans SC", sans-serif; }
     .contact { margin: 19px 0 24px; padding: 0; list-style: none; font: 14px/1.9 Arial, "Noto Sans SC", sans-serif; }
-    nav { border-top: 1px solid var(--line); padding-top: 13px; font: 14px/1.8 Arial, "Noto Sans SC", sans-serif; }
-    nav a { display: block; color: var(--ink); }
-    nav a[aria-current="page"] { color: var(--accent); }
+    aside > nav { border-top: 1px solid var(--line); padding-top: 13px; font: 14px/1.8 Arial, "Noto Sans SC", sans-serif; }
+    aside > nav a { display: block; color: var(--ink); }
+    aside > nav a[aria-current="page"] { color: var(--accent); }
     main { min-width: 0; }
-    .topline { display: flex; justify-content: space-between; gap: 20px; padding-bottom: 18px; border-bottom: 1px solid var(--line); color: var(--muted); font: 13px/1.4 Arial, "Noto Sans SC", sans-serif; }
     .modes { display: flex; gap: 16px; }
-    .modes a { color: var(--muted); }
-    .modes a.active { color: var(--ink); font-weight: bold; text-decoration: underline; text-underline-offset: 4px; }
-    .archive-trigger { display: inline-block; width: 58px; height: 18px; cursor: pointer; vertical-align: middle; }
-    .archive-trigger::after { content: "Archive"; display: inline-block; color: var(--muted); opacity: 0; transition: opacity .15s ease; }
+    .modes a { color: var(--ink); }
+    .modes a.active { color: var(--ink); font-weight: 400; text-decoration: none; }
+    .archive-trigger { display: inline-block; width: 76px; height: 30px; cursor: pointer; vertical-align: middle; }
+    .archive-trigger::after { content: "Archive"; display: inline-block; color: var(--ink); font: inherit; opacity: 0; transition: opacity .15s ease; }
     .archive-trigger:hover::after, .archive-trigger:focus::after { opacity: 1; }
     section { padding: 35px 0 3px; }
+    main > section:first-child { padding-top: 0; }
     h2 { margin: 0 0 15px; font-size: 22px; }
     p { margin: 0 0 15px; }
     .lead { font-size: 18px; line-height: 1.75; }
@@ -55,12 +56,12 @@
     .education li { display: grid; grid-template-columns: 135px 1fr; gap: 16px; margin-bottom: 13px; }
     footer { margin-top: 38px; padding-top: 14px; border-top: 1px solid var(--line); color: var(--muted); font: 13px/1.6 Arial, "Noto Sans SC", sans-serif; }
     @media (max-width: 760px) {
-      .modebar { padding: 16px 22px 0; }
-      .site { display: block; padding: 20px 22px 50px; }
+      .modebar { min-height: 56px; font-size: 17px; }
+      .modebar .modes { padding: 0 22px; }
+      .site { display: block; padding: 14px 22px 50px; }
       aside { position: static; margin-bottom: 34px; }
       .portrait { width: 100px; height: auto; float: right; margin: 0 0 12px 20px; }
-      nav { clear: both; }
-      .topline { display: none; }
+      aside > nav { clear: both; }
       section { padding-top: 29px; }
       .education li { grid-template-columns: 1fr; gap: 2px; }
     }
@@ -68,7 +69,7 @@
   <link rel="stylesheet" href="assets/css/lightbox.css">
 </head>
 <body>
-  <div class="modebar"><span class="modes"><a class="active" href="index.html">Academic</a><span class="archive-trigger" role="link" tabindex="0" aria-label="Open Archive" title="Open Archive"></span></span></div>
+  <div class="modebar"><nav class="modes" aria-label="Site mode"><a class="active" href="./">Academic</a><span class="archive-trigger" role="link" tabindex="0" aria-label="Open Archive" title="Open Archive"></span></nav></div>
   <div class="site">
     <aside>
       <img class="portrait" src="assets/img/preview/profile_photo.jpg" data-full="assets/img/profile_photo.jpg" alt="Tianyi Gao profile photo">
@@ -90,7 +91,6 @@
     </aside>
 
     <main>
-      <div class="topline"><span>Personal academic homepage</span><span>Last updated: August 2026</span></div>
       <section id="about">
         <h2>About me</h2>
         <p class="lead">I am Tianyi Gao, an undergraduate student in Artificial Intelligence at Beijing Institute of Technology, advised by Prof. Hongchao Qin.</p>
