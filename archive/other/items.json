@@ -1,0 +1,21 @@
+[
+  {
+    "title": "东方远空界 ～ Ultimate Vitality of Imagination",
+    "description": "高中时做的东方二次同人游戏，承载了当时的一些幻想。",
+    "label": "前往 Steam →",
+    "url": "https://store.steampowered.com/app/1700220/__Ultimate_Vitality_of_Imagination/",
+    "external": true
+  },
+  {
+    "title": "阿巴吐泡",
+    "description": "一个通过摄像头互动的小游戏。",
+    "label": "打开游戏 →",
+    "url": "../games/ABTP.html"
+  },
+  {
+    "title": "虚拟特雷门琴",
+    "description": "一个通过摄像头进行声音实验的作品。",
+    "label": "打开游戏 →",
+    "url": "../games/hand-instrument.html"
+  }
+]

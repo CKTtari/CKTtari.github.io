@@ -1,6 +1,3 @@
-# CyberTheremin
-基于p5.js的视觉特雷门琴
+# Tianyi Gao
 
-蓝圈控制音量、红圈控制音高
-
-如果没有声音请点击一下浏览器页面
+Personal homepage of Tianyi Gao: https://ckttari.github.io/

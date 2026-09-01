@@ -21,6 +21,7 @@
     .modes { display:flex; gap:16px; }.modes a { color:var(--muted); }.modes a.active { color:var(--ink); font-weight:bold; text-decoration:underline; text-underline-offset:4px; }
     section { padding-top:36px; }.archive-section { display:none; }.archive-section.active { display:block; }.intro { font-size:18px; }.eyebrow { color:var(--muted); font:13px/1.5 Arial,"Noto Sans SC",sans-serif; text-transform:uppercase; letter-spacing:.06em; }
     .archive-section h2 + .eyebrow { margin-top:-12px; }
+    .archive-section > .eyebrow + * { margin-top:26px; }
     .posts { border-top:1px solid var(--line); }.post { display:grid; grid-template-columns:110px 1fr; gap:18px; padding:17px 0; border-bottom:1px solid var(--line); }.post h3 { margin:0; font-size:18px; }.post p { margin:4px 0 0; color:var(--muted); font-size:14px; }
     .album-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:15px; }.album { min-height:180px; padding:14px; display:flex; flex-direction:column; justify-content:flex-end; border:1px solid var(--line); background:linear-gradient(145deg,#d6d2ca,#f7f5f0 56%,#a7a099); color:#1d1d1d; text-align:left; cursor:pointer; font:inherit; }.album.active { outline:2px solid var(--ink); outline-offset:-4px; }.album:nth-child(2) { background:linear-gradient(145deg,#9eafbd,#edf0ef 58%,#55646b); }.album:nth-child(3) { background:linear-gradient(145deg,#b59985,#f2e6d6 58%,#746258); }.album strong { font-family:Arial,"Noto Sans SC",sans-serif; }.album span { font:12px Arial,"Noto Sans SC",sans-serif; }
     .photo-row { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-top:8px; }.photo { aspect-ratio:1; border:1px solid var(--line); background:repeating-linear-gradient(135deg,#e8e8e4 0 12px,#d3d3ce 12px 24px); display:grid; place-items:center; color:var(--muted); font:12px Arial,"Noto Sans SC",sans-serif; }
@@ -64,7 +65,7 @@
       <section class="archive-section active" id="photos"><h2>相册</h2><div class="eyebrow">拍的照片，一些喜欢的。</div><div class="album-grid"><button class="album active" type="button" data-album="相册"><strong>相册 01</strong><span>待填写</span></button><button class="album" type="button" data-album="相册"><strong>相册 02</strong><span>待填写</span></button><button class="album" type="button" data-album="相册"><strong>相册 03</strong><span>待填写</span></button></div><div class="photo-row" aria-live="polite"><div class="photo">图片</div><div class="photo">图片</div><div class="photo">图片</div><div class="photo">图片</div></div></section>
       <section class="archive-section" id="music"><h2>音乐</h2><div class="eyebrow">喜欢的一些音乐</div><h3 class="music-heading">最近喜欢</h3><div class="music"><article class="record" tabindex="0"><div class="record-info"><strong>名称</strong><span>单曲 · 待填写</span></div></article><article class="record" tabindex="0"><div class="record-info"><strong>名称</strong><span>EP · 待填写</span></div></article><article class="record" tabindex="0"><div class="record-info"><strong>名称</strong><span>专辑 · 待填写</span></div></article></div><h3 class="music-heading">最爱</h3><div class="music"><article class="record" tabindex="0"><div class="record-info"><strong>名称</strong><span>单曲 · 待填写</span></div></article><article class="record" tabindex="0"><div class="record-info"><strong>名称</strong><span>EP · 待填写</span></div></article><article class="record" tabindex="0"><div class="record-info"><strong>名称</strong><span>专辑 · 待填写</span></div></article></div></section>
       <section class="archive-section" id="words"><h2>字句</h2><div class="eyebrow">记录随心写下和摘抄的句子</div><div class="quote-carousel"><div class="quote-slide side" data-quote="previous"><p class="quote-text"></p><cite></cite></div><blockquote class="quote-slide" data-quote="current"><p class="quote-text">正在加载……</p><cite></cite></blockquote><div class="quote-slide side" data-quote="next"><p class="quote-text"></p><cite></cite></div><div class="quote-controls"><button type="button" data-quote-step="-1" aria-label="上一句">←</button><button type="button" data-quote-step="1" aria-label="下一句">→</button></div></div></section>
-      <section class="archive-section" id="other"><h2>其他</h2><div class="eyebrow">一些难以归类的东西</div><div class="others"><a class="other" href="https://store.steampowered.com/app/1700220/__Ultimate_Vitality_of_Imagination/" target="_blank" rel="noreferrer"><h3>东方远空界 ～ Ultimate Vitality of Imagination</h3><p>高中时做的东方二次同人游戏，承载了当时的一些幻想。</p><small>前往 Steam →</small></a><a class="other" href="../games/ABTP.html"><h3>阿巴吐泡</h3><p>一个通过摄像头互动的小游戏。</p><small>打开游戏 →</small></a><a class="other" href="../games/hand-instrument.html"><h3>虚拟特雷门琴</h3><p>一个通过摄像头进行声音实验的作品。</p><small>打开游戏 →</small></a><article class="other"><h3>标题</h3><p>待填写。</p><small>待填写</small></article></div></section>
+      <section class="archive-section" id="other"><h2>其他</h2><div class="eyebrow">一些难以归类的东西</div><div class="others" id="other-items"></div></section>
       <footer>© 2026 Tianyi Gao.</footer>
     </main>
   </div>
@@ -116,6 +117,22 @@
         renderQuote();
       })
       .catch(() => { quoteCurrent.querySelector('.quote-text').textContent = '字句暂时无法加载。'; });
+    fetch('other/items.json')
+      .then((response) => { if (!response.ok) throw new Error('Unable to load items'); return response.json(); })
+      .then((items) => {
+        const container = document.querySelector('#other-items');
+        container.replaceChildren(...items.map((item) => {
+          const card = document.createElement('a');
+          card.className = 'other';
+          card.href = item.url;
+          if (item.external) { card.target = '_blank'; card.rel = 'noreferrer'; }
+          const title = document.createElement('h3'); title.textContent = item.title;
+          const description = document.createElement('p'); description.textContent = item.description;
+          const label = document.createElement('small'); label.textContent = item.label;
+          card.append(title, description, label);
+          return card;
+        }));
+      });
     document.querySelectorAll('.album').forEach((album) => {
       album.addEventListener('click', () => {
         document.querySelectorAll('.album').forEach((item) => item.classList.toggle('active', item === album));
