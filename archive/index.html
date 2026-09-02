@@ -30,7 +30,8 @@
     .posts { border-top:1px solid var(--line); }.post { display:grid; grid-template-columns:110px 1fr; gap:18px; padding:17px 0; border-bottom:1px solid var(--line); }.post h3 { margin:0; font-size:18px; }.post p { margin:4px 0 0; color:var(--muted); font-size:14px; }
     .album-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:15px; }.album { min-height:180px; padding:14px; display:flex; flex-direction:column; justify-content:flex-end; border:1px solid var(--line); background:linear-gradient(145deg,#d6d2ca,#f7f5f0 56%,#a7a099); color:#1d1d1d; text-align:left; cursor:pointer; font:inherit; }.album.active { outline:2px solid var(--ink); outline-offset:-4px; }.album:nth-child(2) { background:linear-gradient(145deg,#9eafbd,#edf0ef 58%,#55646b); }.album:nth-child(3) { background:linear-gradient(145deg,#b59985,#f2e6d6 58%,#746258); }.album strong { font-family:Arial,"Noto Sans SC",sans-serif; }.album span { font:12px Arial,"Noto Sans SC",sans-serif; }
     .photo-row { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-top:8px; }.photo { aspect-ratio:1; border:1px solid var(--line); background:repeating-linear-gradient(135deg,#e8e8e4 0 12px,#d3d3ce 12px 24px); display:grid; place-items:center; color:var(--muted); font:12px Arial,"Noto Sans SC",sans-serif; }
-    .music-heading { margin:28px 0 12px; font-size:16px; }.music { display:grid; grid-template-columns:repeat(3,1fr); gap:22px; }.record { position:relative; aspect-ratio:1; overflow:hidden; background:linear-gradient(145deg,#29262a,#8c1b2f 49%,#e7cb9b); }.record:nth-child(2) { background:linear-gradient(145deg,#6e8c99,#f0d9b2 52%,#1c3848); }.record:nth-child(3) { background:linear-gradient(145deg,#dad6ca,#8c8273 49%,#272b2d); }.record::after { content:""; position:absolute; inset:15%; border:1px solid rgba(255,255,255,.65); border-radius:50%; }.record-info { position:absolute; inset:0; display:flex; flex-direction:column; justify-content:flex-end; padding:15px; background:rgba(20,20,20,.86); color:#fff; opacity:0; transition:opacity .2s ease; font:13px/1.5 Arial,"Noto Sans SC",sans-serif; }.record:hover .record-info,.record:focus-within .record-info { opacity:1; }.record-info strong { font-size:16px; }
+    .music-heading { margin:28px 0 12px; font-size:16px; }.music { display:grid; grid-template-columns:repeat(3,1fr); gap:22px; }.record { position:relative; aspect-ratio:1; overflow:hidden; background:linear-gradient(145deg,#29262a,#8c1b2f 49%,#e7cb9b); }.record img { display:block; width:100%; height:100%; object-fit:cover; }.record:nth-child(2) { background:linear-gradient(145deg,#6e8c99,#f0d9b2 52%,#1c3848); }.record:nth-child(3) { background:linear-gradient(145deg,#dad6ca,#8c8273 49%,#272b2d); }.record::after { content:""; position:absolute; inset:15%; border:1px solid rgba(255,255,255,.65); border-radius:50%; pointer-events:none; }.record-info { position:absolute; inset:0; z-index:1; display:flex; flex-direction:column; justify-content:flex-end; padding:15px; background:rgba(20,20,20,.86); color:#fff; opacity:0; transition:opacity .2s ease; font:13px/1.5 Arial,"Noto Sans SC",sans-serif; }.record:hover .record-info,.record:focus-within .record-info { opacity:1; }.record-info strong { font-size:16px; }
+    .music-block { margin-top:26px; }.music-block:first-child { margin-top:0; }.music-toggle { margin-top:14px; border:0; padding:0; background:transparent; color:var(--muted); font:13px Arial,"Noto Sans SC",sans-serif; cursor:pointer; }.music-toggle:hover { color:var(--accent); }.music-grid.collapsed .record:nth-child(n+4) { display:none; }
     .quotes,.others { display:grid; grid-template-columns:repeat(2,1fr); gap:15px; }.quote,.other { min-height:150px; padding:20px; border:1px solid var(--line); display:flex; flex-direction:column; justify-content:space-between; }.quote { font-size:20px; line-height:1.55; }.quote cite,.other small { color:var(--muted); font:12px Arial,"Noto Sans SC",sans-serif; font-style:normal; }.other { color:var(--ink); text-decoration:none; }.other:hover { border-color:var(--ink); text-decoration:none; }.other h3 { margin:0; font-size:17px; }.other p { margin:7px 0; color:var(--muted); font-size:14px; }
     .quote-carousel { position:relative; min-height:444px; overflow:hidden; }
     .quote-slide { position:absolute; top:50%; left:50%; width:min(816px, 100%); height:324px; min-width:0; margin:0; padding:30px 58px; overflow:hidden; border:1px solid var(--line); display:flex; flex-direction:column; justify-content:center; font-size:20px; line-height:1.7; transition:opacity .3s ease, filter .3s ease, transform .3s ease; transform:translate(-50%, -50%); }
@@ -69,7 +70,7 @@
       <section class="archive-home active" id="archive-home"><div class="archive-hero"><img id="archive-image" alt="Archive background"></div><p class="archive-motto">爱天空，爱海洋<br>生活需要丰富的感受与表达</p></section>
       <section class="archive-section" id="writing"><h2>Writing</h2><div class="eyebrow">记录一些想法和故事</div><div class="posts"><article class="post"><time>—</time><div><h3>文章标题</h3><p>待填写。</p></div></article></div></section>
       <section class="archive-section" id="photos"><h2>Photos</h2><div class="eyebrow">拍的照片，一些喜欢的。</div><div class="album-grid"><button class="album active" type="button" data-album="相册"><strong>相册 01</strong><span>待填写</span></button><button class="album" type="button" data-album="相册"><strong>相册 02</strong><span>待填写</span></button><button class="album" type="button" data-album="相册"><strong>相册 03</strong><span>待填写</span></button></div><div class="photo-row" aria-live="polite"><div class="photo">图片</div><div class="photo">图片</div><div class="photo">图片</div><div class="photo">图片</div></div></section>
-      <section class="archive-section" id="music"><h2>Music</h2><div class="eyebrow">喜欢的一些音乐</div><h3 class="music-heading">最近喜欢</h3><div class="music"><article class="record" tabindex="0"><div class="record-info"><strong>名称</strong><span>单曲 · 待填写</span></div></article><article class="record" tabindex="0"><div class="record-info"><strong>名称</strong><span>EP · 待填写</span></div></article><article class="record" tabindex="0"><div class="record-info"><strong>名称</strong><span>专辑 · 待填写</span></div></article></div><h3 class="music-heading">最爱</h3><div class="music"><article class="record" tabindex="0"><div class="record-info"><strong>名称</strong><span>单曲 · 待填写</span></div></article><article class="record" tabindex="0"><div class="record-info"><strong>名称</strong><span>EP · 待填写</span></div></article><article class="record" tabindex="0"><div class="record-info"><strong>名称</strong><span>专辑 · 待填写</span></div></article></div></section>
+      <section class="archive-section" id="music"><h2>Music</h2><div class="eyebrow">喜欢的一些音乐</div><div id="music-content"></div></section>
       <section class="archive-section" id="words"><h2>Words</h2><div class="eyebrow">记录随心写下和摘抄的句子</div><div class="quote-carousel"><div class="quote-slide side" data-quote="previous"><p class="quote-text"></p><cite></cite></div><blockquote class="quote-slide" data-quote="current"><p class="quote-text">正在加载……</p><cite></cite></blockquote><div class="quote-slide side" data-quote="next"><p class="quote-text"></p><cite></cite></div><div class="quote-controls"><button type="button" data-quote-step="-1" aria-label="上一句">←</button><button type="button" data-quote-step="1" aria-label="下一句">→</button></div></div></section>
       <section class="archive-section" id="other"><h2>Other</h2><div class="eyebrow">一些难以归类的东西</div><div class="others" id="other-items"></div></section>
       <footer>© 2026 Tianyi Gao.</footer>
@@ -194,6 +195,48 @@
           card.append(title, description, label);
           return card;
         }));
+      });
+    fetch('../assets/img/music/music.json?v=2')
+      .then((response) => { if (!response.ok) throw new Error('Unable to load music'); return response.json(); })
+      .then((data) => {
+        const container = document.querySelector('#music-content');
+        data.sections.sort((a, b) => (a.id === 'recent' ? -1 : 1) - (b.id === 'recent' ? -1 : 1)).forEach((section) => {
+          section.items.sort(() => Math.random() - 0.5);
+          const block = document.createElement('div');
+          block.className = 'music-block';
+          const heading = document.createElement('h3');
+          heading.className = 'music-heading';
+          heading.textContent = section.title;
+          const grid = document.createElement('div');
+          grid.className = 'music music-grid collapsed';
+          section.items.forEach((item) => {
+            const record = document.createElement('article');
+            record.className = 'record';
+            record.tabIndex = 0;
+            const cover = document.createElement('img');
+            cover.src = `../assets/img/music/${encodeURIComponent(item.cover)}`;
+            cover.alt = `${item.title} — ${item.artist}`;
+            cover.loading = 'lazy';
+            const info = document.createElement('div');
+            info.className = 'record-info';
+            const title = document.createElement('strong'); title.textContent = item.title;
+            const detail = document.createElement('span'); detail.textContent = `${item.type} · ${item.artist}`;
+            info.append(title, detail); record.append(cover, info); grid.append(record);
+          });
+          block.append(heading, grid);
+          if (section.items.length > 3) {
+            const toggle = document.createElement('button');
+            toggle.className = 'music-toggle';
+            toggle.type = 'button';
+            toggle.textContent = '展开全部';
+            toggle.addEventListener('click', () => {
+              const expanded = grid.classList.toggle('collapsed') === false;
+              toggle.textContent = expanded ? '收起' : '展开全部';
+            });
+            block.append(toggle);
+          }
+          container.append(block);
+        });
       });
     document.querySelectorAll('.album').forEach((album) => {
       album.addEventListener('click', () => {

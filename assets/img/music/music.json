@@ -1,0 +1,50 @@
+{
+  "schema": "music-card-v1",
+  "sections": [
+    {
+      "id": "favorites",
+      "title": "最喜欢的",
+      "items": [
+        {"title":"ドゥーピータイム Doopee Time","artist":"Doopees","type":"Album","cover":"image.png"},
+        {"title":"Love in Gas Music #2","artist":"Doopees","type":"Single","cover":"image-1.png"},
+        {"title":"まなもぉん Manamoon","artist":"Serani Poji Video Game Soundtracks","type":"Album","cover":"e3e3e1046d364168fd0a22291a481db.jpg"},
+        {"title":"Hurt (250 Remix)","artist":"NewJeans","type":"Single","cover":"3170446eb3e1b9de488ca221c3fc9fe.jpg"},
+        {"title":"You Will Never Know Why","artist":"Sweet Trip","type":"Album","cover":"image-2.png"},
+        {"title":"Dots and Loops","artist":"Stereolab","type":"Album","cover":"image-4.png"},
+        {"title":"Erotic Probiotic 2","artist":"Nourished by Time","type":"Album","cover":"image-5.png"},
+        {"title":"Dragon New Warm Mountain I Believe in You","artist":"Big Thief","type":"Album","cover":"image-6.png"},
+        {"title":"Seen / Unseen","artist":"Sweet Trip","type":"Album","cover":"image-3.png"},
+        {"title":"모호함 속의 너 Nebulous You","artist":"Della Zyr","type":"EP","cover":"image-7.png"},
+        {"title":"Diaries","artist":"Chestnut Bakery","type":"Album","cover":"image-8.png"},
+        {"title":"天使音乐 Hint Notes","artist":"汪川 [Wang Chuan]","type":"Album","cover":"image-9.png"},
+        {"title":"Kaputt","artist":"Destroyer","type":"Album","cover":"image-10.png"},
+        {"title":"acne","artist":"lace & Chestnut Bakery","type":"Single","cover":"image-11.png"},
+        {"title":"Easy Breezy","artist":"Yaeji","type":"Single","cover":"image-12.png"},
+        {"title":"Diamond Jubilee","artist":"Cindy Lee","type":"Album","cover":"image-13.png"},
+        {"title":"Her Abiding Memory","artist":"Pitcher56","type":"Album","cover":"image-14.png"},
+        {"title":"Loud City Song","artist":"Julia Holter","type":"Album","cover":"image-15.png"},
+        {"title":"Luv (Sic) Pt2","artist":"Shing02","type":"Single","cover":"image-16.png"},
+        {"title":"도로시 (Dorothy)","artist":"Sulli","type":"Single","cover":"image-18.png"},
+        {"title":"晚市","artist":"Railway Suicide Train 卧轨的火车","type":"Single","cover":"image-19.png"},
+        {"title":"如果每天都可以 Happy Happy 誰想要Sad:))","artist":"Hsien Ching 陳嫺靜","type":"Single","cover":"image-21.png"}
+      ]
+    },
+    {
+      "id": "recent",
+      "title": "最近喜欢",
+      "items": [
+        {"title":"身体と歌だけの関係 Karada to uta dake no kankei","artist":"Hi-Posi","type":"Album","cover":"image-17.png"},
+        {"title":"告別的年代","artist":"羅大佑 [Lo Ta-yu]","type":"Compilation","cover":"image-20.png"},
+        {"title":"Canciones de temporada","artist":"Niza","type":"Album","cover":"image-22.png"},
+        {"title":"My Skyscraper","artist":"Nirosta Steel","type":"Album","cover":"image-23.png"},
+        {"title":"ファンファーレ Fanfare","artist":"advantage Lucy","type":"Album","cover":"image-24.png"},
+        {"title":"Time 'n' Place","artist":"Kero Kero Bonito","type":"Album","cover":"image-25.png"},
+        {"title":"曲名：sevens","artist":"lace","type":"Single","cover":"c84ad38b2b5faf2235892cc780d1fb6.jpg"},
+        {"title":"How to Pretend","artist":"Lucy Bedroque","type":"Single","cover":"image-26.png"},
+        {"title":"Tomodachi ga imashita 友達がいました","artist":"Trooper Salute","type":"Album","cover":"image-27.png"},
+        {"title":"Gentlewoman","artist":"Cleo Sol","type":"Album","cover":"image-28.png"},
+        {"title":"Tropic of Capricorn","artist":"菊池桃子 [Momoko Kikuchi]","type":"Album","cover":"image-29.png"}
+      ]
+    }
+  ]
+}
