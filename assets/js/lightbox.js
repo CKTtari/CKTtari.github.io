@@ -17,22 +17,36 @@
     if (lastFocused) lastFocused.focus();
   }
 
-  document.querySelectorAll('[data-full]').forEach((image) => {
+  function openImage(image) {
+    lastFocused = image;
+    enlarged.src = image.dataset.full;
+    enlarged.alt = image.alt || 'Full-size image';
+    dialog.classList.add('open');
+    closeButton.focus();
+  }
+
+  function bindImage(image) {
+    if (image.dataset.lightboxBound === 'true') return;
+    image.dataset.lightboxBound = 'true';
     image.classList.add('preview-image');
     image.setAttribute('tabindex', '0');
     image.setAttribute('role', 'button');
     image.setAttribute('aria-label', 'Open full-size image');
-    const open = () => {
-      lastFocused = image;
-      enlarged.src = image.dataset.full;
-      enlarged.alt = image.alt || 'Full-size image';
-      dialog.classList.add('open');
-      closeButton.focus();
-    };
+    const open = () => openImage(image);
     image.addEventListener('click', open);
     image.addEventListener('keydown', (event) => {
       if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); open(); }
     });
+  }
+
+  document.querySelectorAll('[data-full]').forEach(bindImage);
+  document.addEventListener('click', (event) => {
+    const image = event.target.closest('[data-full]');
+    if (image && !image.classList.contains('lightbox-image')) {
+      const wasBound = image.dataset.lightboxBound === 'true';
+      bindImage(image);
+      if (!wasBound) openImage(image);
+    }
   });
 
   closeButton.addEventListener('click', close);

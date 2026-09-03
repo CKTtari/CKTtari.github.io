@@ -9,13 +9,13 @@
     :root { --ink: #202020; --muted: #696969; --line: #d9d9d9; --accent: #7b1e1e; --paper: #fff; }
     * { box-sizing: border-box; }
     html { scroll-behavior: smooth; }
-    body { margin: 0; background: var(--paper); color: var(--ink); font: 16px/1.7 Georgia, "Times New Roman", "Noto Serif SC", serif; }
+    body { height:100vh; margin:0; overflow:hidden; background:var(--paper); color:var(--ink); font:16px/1.7 Georgia,"Times New Roman","Noto Serif SC",serif; }
     a { color: var(--accent); text-decoration: none; }
     a:hover { text-decoration: underline; text-underline-offset: 3px; }
     .modebar { min-height: 64px; display: flex; align-items: center; border: 0; background: #fff; font: 26px/1.2 "Palatino Linotype", "Book Antiqua", Palatino, Georgia, serif; }
-    .modebar .modes { width: min(1180px, 100%); margin: 0 auto; padding: 0 34px; }
-    .site { max-width: 1180px; margin: 0 auto; padding: 16px 34px 70px; display: grid; grid-template-columns: 255px minmax(0, 1fr); gap: 38px; }
-    aside { position: sticky; top: 36px; align-self: start; }
+    .modebar .modes { display:flex; gap:16px; padding:0; }
+    .site { max-width:1180px; height:100vh; margin:0 auto; padding:0 34px; display:grid; grid-template-columns:255px minmax(0,1fr); gap:38px; }
+    aside { align-self:start; padding-top:24px; }
     .portrait { width: 200px; height: auto; display: block; margin-bottom: 21px; border: 1px solid var(--line); }
     h1, h2, h3 { font-family: Arial, "Noto Sans SC", sans-serif; font-weight: 600; letter-spacing: -.02em; }
     h1 { margin: 0 0 2px; font-size: 28px; }
@@ -24,7 +24,8 @@
     aside > nav { border-top: 1px solid var(--line); padding-top: 13px; font: 14px/1.8 Arial, "Noto Sans SC", sans-serif; }
     aside > nav a { display: block; color: var(--ink); }
     aside > nav a[aria-current="page"] { color: var(--accent); }
-    main { min-width: 0; }
+    main { min-width:0; height:100vh; overflow-y:auto; scrollbar-width:none; -ms-overflow-style:none; padding:42px 0 70px; }
+    main::-webkit-scrollbar { display:none; }
     .modes { display: flex; gap: 16px; }
     .modes a { color: var(--ink); }
     .modes a.active { color: var(--ink); font-weight: 400; text-decoration: none; }
@@ -56,9 +57,12 @@
     .education li { display: grid; grid-template-columns: 135px 1fr; gap: 16px; margin-bottom: 13px; }
     footer { margin-top: 38px; padding-top: 14px; border-top: 1px solid var(--line); color: var(--muted); font: 13px/1.6 Arial, "Noto Sans SC", sans-serif; }
     @media (max-width: 760px) {
-      .modebar { min-height: 56px; font-size: 17px; }
-      .modebar .modes { padding: 0 22px; }
-      .site { display: block; padding: 14px 22px 50px; }
+      body { height:auto; overflow:auto; }
+      .modebar { min-height:56px; font-size:17px; }
+      .modebar .modes { padding:0; }
+      .site { height:auto; display:block; padding:0 22px 50px; }
+      aside { padding-top:18px; }
+      main { height:auto; overflow:visible; padding:0; }
       aside { position: static; margin-bottom: 34px; }
       .portrait { width: 100px; height: auto; float: right; margin: 0 0 12px 20px; }
       aside > nav { clear: both; }
@@ -69,9 +73,9 @@
   <link rel="stylesheet" href="assets/css/lightbox.css">
 </head>
 <body>
-  <div class="modebar"><nav class="modes" aria-label="Site mode"><a class="active" href="./">Academic</a><span class="archive-trigger" role="link" tabindex="0" aria-label="Open Archive" title="Open Archive"></span></nav></div>
   <div class="site">
     <aside>
+      <div class="modebar"><nav class="modes" aria-label="Site mode"><a class="active" href="./">Academic</a><span class="archive-trigger" role="link" tabindex="0" aria-label="Open Archive" title="Open Archive"></span></nav></div>
       <img class="portrait" src="assets/img/preview/profile_photo.jpg" data-full="assets/img/profile_photo.jpg" alt="Tianyi Gao profile photo">
       <h1>Tianyi Gao</h1>
       <div class="role">B.Eng. Student in Artificial Intelligence</div>

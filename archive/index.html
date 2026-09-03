@@ -7,19 +7,22 @@
   <style>
     :root { --ink:#202020; --muted:#6a6a6a; --line:#d9d9d9; --accent:#7b1e1e; }
     * { box-sizing:border-box; } html { scroll-behavior:smooth; }
-    body { margin:0; color:var(--ink); font:16px/1.7 Georgia,"Times New Roman","Noto Serif SC",serif; }
+    body { height:100vh; margin:0; overflow:hidden; color:var(--ink); font:16px/1.7 Georgia,"Times New Roman","Noto Serif SC",serif; }
     a { color:var(--accent); text-decoration:none; } a:hover { text-decoration:underline; text-underline-offset:3px; }
     .modebar { min-height:64px; display:flex; align-items:center; border:0; background:#fff; font:26px/1.2 "Palatino Linotype","Book Antiqua",Palatino,Georgia,serif; }
-    .modebar .modes { width:min(1180px,100%); margin:0 auto; padding:0 34px; }
-    .site { max-width:1180px; margin:0 auto; padding:16px 34px 70px; display:grid; grid-template-columns:255px minmax(0,1fr); gap:38px; }
-    aside { position:sticky; top:36px; align-self:start; }
+    .modebar .modes { display:flex; gap:16px; padding:0; }
+    .site { max-width:1180px; height:100vh; margin:0 auto; padding:0 34px; display:grid; grid-template-columns:255px minmax(0,1fr); gap:38px; }
+    aside { align-self:start; padding-top:24px; }
     h1,h2,h3 { font-family:Arial,"Noto Sans SC",sans-serif; font-weight:600; letter-spacing:-.02em; }
     h1 { margin:0 0 20px; font-size:27px; } h2 { margin:0 0 17px; font-size:23px; }
     aside > nav { border-top:1px solid var(--line); padding-top:13px; font:14px/2 Arial,"Noto Sans SC",sans-serif; }
     aside > nav a { display:block; color:var(--ink); } aside > nav a:hover,aside > nav a.active { color:var(--accent); }
     .social-links { margin-top:27px; padding-top:13px; border-top:1px solid var(--line); font:13px/2 Arial,"Noto Sans SC",sans-serif; }.social-links a { display:block; color:var(--muted); }.social-links a:hover { color:var(--accent); }
-    main { position:relative; min-width:0; }.topline { display:flex; justify-content:space-between; gap:20px; padding-bottom:18px; border-bottom:1px solid var(--line); color:var(--muted); font:13px/1.4 Arial,"Noto Sans SC",sans-serif; }
+    main { position:relative; min-width:0; height:100vh; overflow-y:auto; scrollbar-width:none; -ms-overflow-style:none; padding:42px 0 70px; }.topline { display:flex; justify-content:space-between; gap:20px; padding-bottom:18px; border-bottom:1px solid var(--line); color:var(--muted); font:13px/1.4 Arial,"Noto Sans SC",sans-serif; } main::-webkit-scrollbar { display:none; }
     .modes { display:flex; gap:16px; }.modes a { color:var(--ink); }.modes a.active { color:var(--ink); font-weight:400; text-decoration:none; }
+    .academic-trigger { display:inline-block; width:88px; height:30px; cursor:pointer; vertical-align:middle; }
+    .academic-trigger::after { content:"Academic"; display:inline-block; color:var(--ink); font:inherit; opacity:0; transition:opacity .15s ease; }
+    .academic-trigger:hover::after, .academic-trigger:focus::after { opacity:1; }
     section { padding-top:0; }.archive-home,.archive-section { position:absolute; inset:0; display:block; visibility:hidden; opacity:0; pointer-events:none; transition:opacity .18s ease,visibility 0s linear .18s; }.archive-home.active,.archive-section.active { position:relative; inset:auto; visibility:visible; opacity:1; pointer-events:auto; animation:archive-content-enter .25s ease both; transition:opacity .18s ease; }.intro { font-size:18px; }.eyebrow { color:var(--muted); font:13px/1.5 Arial,"Noto Sans SC",sans-serif; text-transform:uppercase; letter-spacing:.06em; }
     .archive-hero { width:100%; max-height:540px; display:flex; justify-content:flex-start; align-items:flex-start; overflow:hidden; background:transparent; }
     .archive-hero img { display:block; max-width:100%; max-height:540px; }
@@ -28,9 +31,10 @@
     .archive-section h2 + .eyebrow { margin-top:-12px; }
     .archive-section > .eyebrow + * { margin-top:26px; }
     .posts { border-top:1px solid var(--line); }.post { display:grid; grid-template-columns:110px 1fr; gap:18px; padding:17px 0; border-bottom:1px solid var(--line); }.post h3 { margin:0; font-size:18px; }.post p { margin:4px 0 0; color:var(--muted); font-size:14px; }
-    .album-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:15px; }.album { min-height:180px; padding:14px; display:flex; flex-direction:column; justify-content:flex-end; border:1px solid var(--line); background:linear-gradient(145deg,#d6d2ca,#f7f5f0 56%,#a7a099); color:#1d1d1d; text-align:left; cursor:pointer; font:inherit; }.album.active { outline:2px solid var(--ink); outline-offset:-4px; }.album:nth-child(2) { background:linear-gradient(145deg,#9eafbd,#edf0ef 58%,#55646b); }.album:nth-child(3) { background:linear-gradient(145deg,#b59985,#f2e6d6 58%,#746258); }.album strong { font-family:Arial,"Noto Sans SC",sans-serif; }.album span { font:12px Arial,"Noto Sans SC",sans-serif; }
-    .photo-row { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-top:8px; }.photo { aspect-ratio:1; border:1px solid var(--line); background:repeating-linear-gradient(135deg,#e8e8e4 0 12px,#d3d3ce 12px 24px); display:grid; place-items:center; color:var(--muted); font:12px Arial,"Noto Sans SC",sans-serif; }
-    .music-heading { margin:28px 0 12px; font-size:16px; }.music { display:grid; grid-template-columns:repeat(3,1fr); gap:22px; }.record { position:relative; aspect-ratio:1; overflow:hidden; background:linear-gradient(145deg,#29262a,#8c1b2f 49%,#e7cb9b); }.record img { display:block; width:100%; height:100%; object-fit:cover; }.record:nth-child(2) { background:linear-gradient(145deg,#6e8c99,#f0d9b2 52%,#1c3848); }.record:nth-child(3) { background:linear-gradient(145deg,#dad6ca,#8c8273 49%,#272b2d); }.record::after { content:""; position:absolute; inset:15%; border:1px solid rgba(255,255,255,.65); border-radius:50%; pointer-events:none; }.record-info { position:absolute; inset:0; z-index:1; display:flex; flex-direction:column; justify-content:flex-end; padding:15px; background:rgba(20,20,20,.86); color:#fff; opacity:0; transition:opacity .2s ease; font:13px/1.5 Arial,"Noto Sans SC",sans-serif; }.record:hover .record-info,.record:focus-within .record-info { opacity:1; }.record-info strong { font-size:16px; }
+    .post-list { border-top:1px solid var(--line); }.post-list .post { cursor:pointer; }.post-list .post:hover h3 { color:var(--accent); }.article-reader { margin-top:28px; padding-top:24px; border-top:1px solid var(--line); }.article-reader h3 { margin:0 0 8px; font-size:24px; }.article-reader .article-meta { color:var(--muted); font:13px Arial,"Noto Sans SC",sans-serif; }.article-body { margin-top:22px; }.article-body h1,.article-body h2,.article-body h3 { margin-top:26px; }.article-body img { max-width:100%; height:auto; }.article-body pre { padding:14px; overflow:auto; background:#f5f5f2; font:13px/1.5 Consolas,monospace; }.article-body blockquote { margin:16px 0; padding-left:16px; border-left:2px solid var(--line); color:var(--muted); }
+    .album-grid { display:flex; gap:8px; overflow-x:auto; overflow-y:hidden; padding:3px 0 16px; scrollbar-width:none; scroll-behavior:smooth; }.album-grid::-webkit-scrollbar { height:0; }.album-grid:hover { scrollbar-width:thin; }.album-grid:hover::-webkit-scrollbar { height:6px; }.album-grid:hover::-webkit-scrollbar-thumb { background:#aaa; }.album { flex:0 0 108px; min-height:52px; padding:7px; display:flex; flex-direction:column; justify-content:center; align-items:center; border:1px solid var(--line); background:transparent; color:#1d1d1d; text-align:center; cursor:pointer; font:inherit; }.album.active { outline:2px solid var(--ink); outline-offset:-3px; }.album strong { font:17px "Palatino Linotype","Book Antiqua",Palatino,Georgia,serif; }.album span { display:none; }
+    .gallery-view { min-height:540px; margin-top:8px; display:flex; align-items:center; justify-content:center; background:#fff; }.gallery-frame { position:relative; width:100%; min-height:540px; padding:0 58px; display:flex; align-items:center; justify-content:center; }.gallery-view img { display:block; width:auto; height:auto; max-width:calc(100% - 16px); max-height:500px; cursor:zoom-in; }.gallery-controls { position:absolute; inset:0; display:flex; align-items:center; justify-content:space-between; pointer-events:none; }.gallery-controls button { position:relative; width:48px; height:60px; border:0; padding:0; background:transparent; color:#888; font-size:0; cursor:pointer; pointer-events:auto; }.gallery-controls button::before { content:""; position:absolute; top:50%; left:50%; width:0; height:0; border-top:13px solid transparent; border-bottom:13px solid transparent; transform:translate(-50%, -50%); }.gallery-controls button[data-gallery-step="-1"]::before { border-right:18px solid #888; }.gallery-controls button[data-gallery-step="1"]::before { border-left:18px solid #888; }.gallery-controls button:hover::before { border-right-color:#555; border-left-color:#555; }.gallery-status { color:var(--muted); font:13px Arial,"Noto Sans SC",sans-serif; }
+    .music-heading { margin:28px 0 12px; font-size:16px; }.music { display:grid; grid-template-columns:repeat(3,1fr); gap:22px; }.record { position:relative; aspect-ratio:1; overflow:hidden; background:linear-gradient(145deg,#29262a,#8c1b2f 49%,#e7cb9b); }.record img { display:block; width:100%; height:100%; object-fit:cover; }.record:nth-child(2) { background:linear-gradient(145deg,#6e8c99,#f0d9b2 52%,#1c3848); }.record:nth-child(3) { background:linear-gradient(145deg,#dad6ca,#8c8273 49%,#272b2d); }.record-info { position:absolute; inset:0; z-index:1; display:flex; flex-direction:column; justify-content:flex-end; padding:15px; background:rgba(20,20,20,.86); color:#fff; opacity:0; transition:opacity .2s ease; font:13px/1.5 Arial,"Noto Sans SC",sans-serif; }.record:hover .record-info,.record:focus-within .record-info { opacity:1; }.record-info strong { font-size:16px; }
     .music-block { margin-top:26px; }.music-block:first-child { margin-top:0; }.music-toggle { margin-top:14px; border:0; padding:0; background:transparent; color:var(--muted); font:13px Arial,"Noto Sans SC",sans-serif; cursor:pointer; }.music-toggle:hover { color:var(--accent); }.music-grid.collapsed .record:nth-child(n+4) { display:none; }
     .quotes,.others { display:grid; grid-template-columns:repeat(2,1fr); gap:15px; }.quote,.other { min-height:150px; padding:20px; border:1px solid var(--line); display:flex; flex-direction:column; justify-content:space-between; }.quote { font-size:20px; line-height:1.55; }.quote cite,.other small { color:var(--muted); font:12px Arial,"Noto Sans SC",sans-serif; font-style:normal; }.other { color:var(--ink); text-decoration:none; }.other:hover { border-color:var(--ink); text-decoration:none; }.other h3 { margin:0; font-size:17px; }.other p { margin:7px 0; color:var(--muted); font-size:14px; }
     .quote-carousel { position:relative; min-height:444px; overflow:hidden; }
@@ -44,21 +48,20 @@
     .quote-controls button { width:38px; height:46px; border:0; padding:0; background:transparent; color:var(--ink); font:24px/1 Arial,sans-serif; cursor:pointer; pointer-events:auto; }
     .quote-controls button:hover { color:var(--accent); }
     footer { margin-top:42px; padding-top:14px; border-top:1px solid var(--line); color:var(--muted); font:13px Arial,"Noto Sans SC",sans-serif; }
-    @media(max-width:760px) { .modebar { min-height:56px; padding:0; font-size:17px; }.modebar .modes { padding:0 22px; }.site { display:block; padding:14px 22px 50px; } aside { position:static; margin-bottom:30px; }.archive-hero { height:auto; min-height:0; }.archive-motto { font-size:17px; }.topline { font-size:12px; }.album-grid,.music { grid-template-columns:repeat(2,1fr); }.photo-row { grid-template-columns:repeat(2,1fr); }.post { grid-template-columns:1fr; gap:3px; }.quotes,.others { grid-template-columns:1fr; }.quote-carousel { min-height:400px; }.quote-slide { width:100%; height:288px; padding:22px 48px; font-size:18px; }.quote-slide cite { right:48px; bottom:18px; left:48px; }.quote-controls { width:100%; }.quote-controls button { width:34px; } }
+    @media(max-width:760px) { body { height:auto; overflow:auto; }.modebar { min-height:56px; padding:0; font-size:17px; }.modebar .modes { padding:0; }.site { height:auto; display:block; padding:0 22px 50px; } aside { position:static; margin-bottom:30px; padding-top:18px; } main { height:auto; overflow:visible; padding:0; }.archive-hero { height:auto; min-height:0; }.archive-motto { font-size:17px; }.topline { font-size:12px; }.album-grid,.music { grid-template-columns:repeat(2,1fr); }.photo-row { grid-template-columns:repeat(2,1fr); }.post { grid-template-columns:1fr; gap:3px; }.quotes,.others { grid-template-columns:1fr; }.quote-carousel { min-height:400px; }.quote-slide { width:100%; height:288px; padding:22px 48px; font-size:18px; }.quote-slide cite { right:48px; bottom:18px; left:48px; }.quote-controls { width:100%; }.quote-controls button { width:34px; } }
   </style>
   <link rel="stylesheet" href="../assets/css/lightbox.css">
 </head>
 <body>
-  <div class="modebar"><nav class="modes" aria-label="Site mode"><a class="active archive-home-link" href="./">Archive</a></nav></div>
   <div class="site">
     <aside>
+      <div class="modebar"><nav class="modes" aria-label="Site mode"><a class="active archive-home-link" href="./">Archive</a><span class="academic-trigger" role="link" tabindex="0" aria-label="Open Academic" title="Open Academic"></span></nav></div>
       <nav aria-label="Archive navigation">
-        <a href="#photos" data-target="photos">Photos</a>
-        <a href="#words" data-target="words">Words</a>
+        <a href="#writing" data-target="writing">Articles</a>
+        <a href="#photos" data-target="photos">Gallery</a>
         <a href="#music" data-target="music">Music</a>
-        <a href="#writing" data-target="writing">Writing</a>
-        <a href="#other" data-target="other">Other</a>
-        <a class="academic-return" href="../">← 学术主页</a>
+        <a href="#other" data-target="other">Others</a>
+        <a href="#words" data-target="words">Words</a>
       </nav>
       <div class="social-links" aria-label="Social links">
         <a href="https://space.bilibili.com/33266404?spm_id_from=333.1007.0.0" target="_blank" rel="noreferrer">Bilibili</a>
@@ -68,14 +71,15 @@
     </aside>
     <main>
       <section class="archive-home active" id="archive-home"><div class="archive-hero"><img id="archive-image" alt="Archive background"></div><p class="archive-motto">爱天空，爱海洋<br>生活需要丰富的感受与表达</p></section>
-      <section class="archive-section" id="writing"><h2>Writing</h2><div class="eyebrow">记录一些想法和故事</div><div class="posts"><article class="post"><time>—</time><div><h3>文章标题</h3><p>待填写。</p></div></article></div></section>
-      <section class="archive-section" id="photos"><h2>Photos</h2><div class="eyebrow">拍的照片，一些喜欢的。</div><div class="album-grid"><button class="album active" type="button" data-album="相册"><strong>相册 01</strong><span>待填写</span></button><button class="album" type="button" data-album="相册"><strong>相册 02</strong><span>待填写</span></button><button class="album" type="button" data-album="相册"><strong>相册 03</strong><span>待填写</span></button></div><div class="photo-row" aria-live="polite"><div class="photo">图片</div><div class="photo">图片</div><div class="photo">图片</div><div class="photo">图片</div></div></section>
+      <section class="archive-section" id="writing"><h2>Articles</h2><div class="eyebrow">记录一些想法和故事</div><div class="post-list" id="post-list"><p class="gallery-status">正在读取文章……</p></div><article class="article-reader" id="article-reader" hidden><h3 id="article-title"></h3><div class="article-meta" id="article-meta"></div><div class="article-body" id="article-body"></div></article></section>
+      <section class="archive-section" id="photos"><h2>Gallery</h2><div class="eyebrow">拍的照片，一些喜欢的。</div><div class="album-grid" id="album-grid"><div class="gallery-status">正在读取相册……</div></div><div class="gallery-view" id="gallery-view" aria-live="polite"><span class="gallery-status">选择一个相册</span></div></section>
       <section class="archive-section" id="music"><h2>Music</h2><div class="eyebrow">喜欢的一些音乐</div><div id="music-content"></div></section>
       <section class="archive-section" id="words"><h2>Words</h2><div class="eyebrow">记录随心写下和摘抄的句子</div><div class="quote-carousel"><div class="quote-slide side" data-quote="previous"><p class="quote-text"></p><cite></cite></div><blockquote class="quote-slide" data-quote="current"><p class="quote-text">正在加载……</p><cite></cite></blockquote><div class="quote-slide side" data-quote="next"><p class="quote-text"></p><cite></cite></div><div class="quote-controls"><button type="button" data-quote-step="-1" aria-label="上一句">←</button><button type="button" data-quote-step="1" aria-label="下一句">→</button></div></div></section>
       <section class="archive-section" id="other"><h2>Other</h2><div class="eyebrow">一些难以归类的东西</div><div class="others" id="other-items"></div></section>
       <footer>© 2026 Tianyi Gao.</footer>
     </main>
   </div>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <script>
     const archiveHome = document.querySelector('#archive-home');
     const archiveHomeLink = document.querySelector('.archive-home-link');
@@ -109,6 +113,11 @@
       if (target === 'home') showRandomBackground();
     }
     archiveHomeLink.addEventListener('click', (event) => { event.preventDefault(); showArchiveView('home'); history.replaceState(null, '', './'); });
+    const academicTrigger = document.querySelector('.academic-trigger');
+    academicTrigger.addEventListener('click', () => { window.location.href = '../'; });
+    academicTrigger.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); window.location.href = '../'; }
+    });
     const backgroundManifest = '../assets/img/background/backgrounds.json';
     const backgroundDirectoryApi = 'https://api.github.com/repos/CKTtari/CKTtari.github.io/contents/assets/img/background?ref=main';
     const backgroundDirectory = '../assets/img/background/';
@@ -238,12 +247,92 @@
           container.append(block);
         });
       });
-    document.querySelectorAll('.album').forEach((album) => {
-      album.addEventListener('click', () => {
-        document.querySelectorAll('.album').forEach((item) => item.classList.toggle('active', item === album));
-        document.querySelector('.photo-row').innerHTML = [1, 2, 3, 4].map((number) => `<div class="photo">${album.dataset.album.toUpperCase()} 0${number}</div>`).join('');
+    const albumGrid = document.querySelector('#album-grid');
+    const galleryView = document.querySelector('#gallery-view');
+    let galleryAlbums = [];
+    let galleryState = { album: '', order: [], index: 0 };
+    const imageExtensions = /\.(jpe?g|png|webp|gif)$/i;
+    function shuffleGallery(items) {
+      const result = [...items];
+      for (let i = result.length - 1; i > 0; i -= 1) { const j = Math.floor(Math.random() * (i + 1)); [result[i], result[j]] = [result[j], result[i]]; }
+      return result;
+    }
+    function renderGalleryImage() {
+      const album = galleryAlbums.find((item) => item.name === galleryState.album);
+      if (!album || !galleryState.order.length) return;
+      const imagePath = galleryState.order[galleryState.index];
+      galleryView.innerHTML = `<div class="gallery-frame"><img class="preview-image" src="${imagePath}" data-full="${imagePath}" alt="${album.name}"><div class="gallery-controls"><button type="button" data-gallery-step="-1" aria-label="上一张">←</button><button type="button" data-gallery-step="1" aria-label="下一张">→</button></div></div>`;
+      galleryView.querySelectorAll('[data-gallery-step]').forEach((button) => button.addEventListener('click', (event) => { event.stopPropagation(); galleryState.index = (galleryState.index + Number(button.dataset.galleryStep) + galleryState.order.length) % galleryState.order.length; renderGalleryImage(); }));
+    }
+    function selectAlbum(album) {
+      galleryState = { album: album.name, order: shuffleGallery(album.images), index: 0 };
+      document.querySelectorAll('.album').forEach((item) => item.classList.toggle('active', item.dataset.album === album.name));
+      renderGalleryImage();
+    }
+    function renderAlbums() {
+      albumGrid.replaceChildren(...galleryAlbums.map((album) => {
+        const button = document.createElement('button'); button.className = 'album'; button.type = 'button'; button.dataset.album = album.name;
+        const title = document.createElement('strong'); title.textContent = album.name;
+        const count = document.createElement('span'); count.textContent = `${album.images.length} 张照片`;
+        button.append(title, count); button.addEventListener('click', () => selectAlbum(album)); return button;
+      }));
+    }
+    function loadLocalGallery() {
+      return fetch('../assets/gallery/').then((response) => response.text()).then((html) => {
+        const links = Array.from(new DOMParser().parseFromString(html, 'text/html').querySelectorAll('a'));
+        return Promise.all(links.map((link) => decodeURIComponent(link.getAttribute('href') || '')).filter((name) => name.endsWith('/')).map((name) => fetch(`../assets/gallery/${encodeURIComponent(name.slice(0, -1))}/`).then((response) => response.text()).then((albumHtml) => ({ name: name.slice(0, -1), images: Array.from(new DOMParser().parseFromString(albumHtml, 'text/html').querySelectorAll('a')).map((link) => decodeURIComponent(link.getAttribute('href') || '')).filter((file) => imageExtensions.test(file)).map((file) => `../assets/gallery/${encodeURIComponent(name.slice(0, -1))}/${encodeURIComponent(file)}`) }))));
       });
-    });
+    }
+    function loadRemoteGallery() {
+      return fetch('https://api.github.com/repos/CKTtari/CKTtari.github.io/git/trees/main?recursive=1').then((response) => response.json()).then((tree) => {
+        const albums = {};
+        tree.tree.filter((file) => file.type === 'blob' && file.path.startsWith('assets/gallery/') && imageExtensions.test(file.path)).forEach((file) => { const parts = file.path.split('/'); const name = parts[2]; (albums[name] ||= []).push(`../assets/gallery/${encodeURIComponent(name)}/${encodeURIComponent(parts.slice(3).join('/'))}`); });
+        return Object.entries(albums).map(([name, images]) => ({ name, images }));
+      });
+    }
+    const localPreview = ['localhost', '127.0.0.1', '::1'].includes(window.location.hostname);
+    albumGrid.addEventListener('wheel', (event) => { if (Math.abs(event.deltaY) > Math.abs(event.deltaX)) { event.preventDefault(); albumGrid.scrollBy({ left: event.deltaY, behavior: 'smooth' }); } }, { passive: false });
+    const albumOrder = ['BIT', 'TFLS', '天津', '北京', '上海', '岭南', 'Cats', '碎片', '天空', '水', '月', '花', 'other cities'];
+    (localPreview ? loadLocalGallery() : loadRemoteGallery()).catch(() => localPreview ? loadRemoteGallery() : loadLocalGallery()).then((albums) => { galleryAlbums = albums.filter((album) => album.images.length).sort((a, b) => albumOrder.indexOf(a.name) - albumOrder.indexOf(b.name)); renderAlbums(); selectAlbum(galleryAlbums[Math.floor(Math.random() * galleryAlbums.length)]); }).catch(() => { albumGrid.innerHTML = '<span class="gallery-status">相册暂时无法加载。</span>'; });
+    const postList = document.querySelector('#post-list');
+    const articleReader = document.querySelector('#article-reader');
+    const articleTitle = document.querySelector('#article-title');
+    const articleMeta = document.querySelector('#article-meta');
+    const articleBody = document.querySelector('#article-body');
+    function parseArticle(markdown, file) {
+      const match = markdown.match(/^---\s*([\s\S]*?)\s*---\s*([\s\S]*)$/);
+      const metadata = {};
+      let body = markdown;
+      if (match) {
+        match[1].split('\n').forEach((line) => { const separator = line.indexOf(':'); if (separator > -1) metadata[line.slice(0, separator).trim()] = line.slice(separator + 1).trim(); });
+        body = match[2].trim();
+      }
+      body = body.replace(/!\[([^\]]*)\]\((?!https?:\/\/)([^)]+)\)/g, (full, alt, src) => `![${alt}](../assets/articles/${src})`);
+      return { metadata, body, file };
+    }
+    function openArticle(article) {
+      fetch(`../assets/articles/${encodeURIComponent(article.file)}`)
+        .then((response) => response.text())
+        .then((markdown) => {
+          const parsed = parseArticle(markdown, article.file);
+          articleTitle.textContent = parsed.metadata.title || article.slug;
+          articleMeta.textContent = [parsed.metadata.date, parsed.metadata.summary].filter(Boolean).join(' · ');
+          articleBody.innerHTML = marked.parse(parsed.body);
+          articleReader.hidden = false;
+        });
+    }
+    fetch('../assets/articles/articles.json')
+      .then((response) => response.json())
+      .then((articles) => Promise.all(articles.map((article) => fetch(`../assets/articles/${encodeURIComponent(article.file)}`).then((response) => response.text()).then((markdown) => ({ article, parsed: parseArticle(markdown, article.file) })))))
+      .then((articles) => {
+        postList.replaceChildren(...articles.map(({ article, parsed }) => {
+          const entry = document.createElement('article'); entry.className = 'post'; entry.tabIndex = 0;
+          const date = document.createElement('time'); date.textContent = parsed.metadata.date || '—';
+          const content = document.createElement('div'); const title = document.createElement('h3'); title.textContent = parsed.metadata.title || article.slug; const summary = document.createElement('p'); summary.textContent = parsed.metadata.summary || '';
+          content.append(title, summary); entry.append(date, content); entry.addEventListener('click', () => openArticle(article)); entry.addEventListener('keydown', (event) => { if (event.key === 'Enter' || event.key === ' ') openArticle(article); }); return entry;
+        }));
+      })
+      .catch(() => { postList.innerHTML = '<span class="gallery-status">文章暂时无法加载。</span>'; });
   </script>
   <script src="../assets/js/lightbox.js"></script>
 </body>

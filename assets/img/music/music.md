@@ -132,6 +132,20 @@ single
  如果每天都可以 Happy Happy 誰想要Sad:))
 Hsien Ching 陳嫺靜 
 
+![alt text](image-31.png)
+アダンの風 Windswept Adan
+.	.	.	.
+Artist	青葉市子 [Ichiko Aoba]
+Type	Album
+
+![alt text](image-32.png)
+Essentials
+.	.	.	.	.	.	.	.
+Artist	Erika de Casier
+Type	Album
+
+
+
 # 最近喜欢
 ![alt text](image-17.png)
 身体と歌だけの関係 Karada to uta dake no kankei
@@ -198,4 +212,11 @@ Type	Album
 Tropic of Capricorn
 .	.	.	.
 Artist	菊池桃子 [Momoko Kikuchi]
+Type	Album
+
+
+![alt text](image-30.png)
+A Son of the Sun
+.	.	.	.	.
+Artist	Uyama Hiroto
 Type	Album

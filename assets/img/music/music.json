@@ -7,7 +7,7 @@
       "items": [
         {"title":"ドゥーピータイム Doopee Time","artist":"Doopees","type":"Album","cover":"image.png"},
         {"title":"Love in Gas Music #2","artist":"Doopees","type":"Single","cover":"image-1.png"},
-        {"title":"まなもぉん Manamoon","artist":"Serani Poji Video Game Soundtracks","type":"Album","cover":"e3e3e1046d364168fd0a22291a481db.jpg"},
+        {"title":"まなもぉん Manamoon","artist":"Serani Poji","type":"Album","cover":"e3e3e1046d364168fd0a22291a481db.jpg"},
         {"title":"Hurt (250 Remix)","artist":"NewJeans","type":"Single","cover":"3170446eb3e1b9de488ca221c3fc9fe.jpg"},
         {"title":"You Will Never Know Why","artist":"Sweet Trip","type":"Album","cover":"image-2.png"},
         {"title":"Dots and Loops","artist":"Stereolab","type":"Album","cover":"image-4.png"},
@@ -26,7 +26,9 @@
         {"title":"Luv (Sic) Pt2","artist":"Shing02","type":"Single","cover":"image-16.png"},
         {"title":"도로시 (Dorothy)","artist":"Sulli","type":"Single","cover":"image-18.png"},
         {"title":"晚市","artist":"Railway Suicide Train 卧轨的火车","type":"Single","cover":"image-19.png"},
-        {"title":"如果每天都可以 Happy Happy 誰想要Sad:))","artist":"Hsien Ching 陳嫺靜","type":"Single","cover":"image-21.png"}
+        {"title":"如果每天都可以 Happy Happy 誰想要Sad:))","artist":"Hsien Ching 陳嫺靜","type":"Single","cover":"image-21.png"},
+        {"title":"アダンの風 Windswept Adan","artist":"青葉市子 [Ichiko Aoba]","type":"Album","cover":"image-31.png"},
+        {"title":"Essentials","artist":"Erika de Casier","type":"Album","cover":"image-32.png"}
       ]
     },
     {
@@ -43,7 +45,8 @@
         {"title":"How to Pretend","artist":"Lucy Bedroque","type":"Single","cover":"image-26.png"},
         {"title":"Tomodachi ga imashita 友達がいました","artist":"Trooper Salute","type":"Album","cover":"image-27.png"},
         {"title":"Gentlewoman","artist":"Cleo Sol","type":"Album","cover":"image-28.png"},
-        {"title":"Tropic of Capricorn","artist":"菊池桃子 [Momoko Kikuchi]","type":"Album","cover":"image-29.png"}
+        {"title":"Tropic of Capricorn","artist":"菊池桃子 [Momoko Kikuchi]","type":"Album","cover":"image-29.png"},
+        {"title":"A Son of the Sun","artist":"Uyama Hiroto","type":"Album","cover":"image-30.png"}
       ]
     }
   ]
