@@ -300,6 +300,9 @@
     const articleMeta = document.querySelector('#article-meta');
     const articleBody = document.querySelector('#article-body');
     const articleBack = document.querySelector('#article-back');
+    const articleFileUrl = (file) => localPreview
+      ? `../assets/articles/${encodeURIComponent(file)}`
+      : `https://raw.githubusercontent.com/CKTtari/CKTtari.github.io/main/assets/articles/${encodeURIComponent(file)}`;
     function parseArticle(markdown, file) {
       const match = markdown.match(/^---\s*([\s\S]*?)\s*---\s*([\s\S]*)$/);
       const metadata = {};
@@ -312,13 +315,13 @@
       return { metadata, body, file };
     }
     function openArticle(article) {
-      fetch(`../assets/articles/${encodeURIComponent(article.file)}`)
+      fetch(articleFileUrl(article.file))
         .then((response) => response.text())
         .then((markdown) => {
           const parsed = parseArticle(markdown, article.file);
           articleTitle.textContent = parsed.metadata.title || article.slug;
           articleMeta.textContent = [parsed.metadata.date, parsed.metadata.summary].filter(Boolean).join(' · ');
-          articleBody.innerHTML = marked.parse(parsed.body);
+          articleBody.innerHTML = window.marked ? marked.parse(parsed.body) : parsed.body.replace(/\n\n/g, '<br><br>');
           postList.classList.add('is-hidden');
           articleReader.hidden = false;
         });
@@ -326,7 +329,7 @@
     articleBack.addEventListener('click', () => { articleReader.hidden = true; postList.classList.remove('is-hidden'); });
     fetch('../assets/articles/articles.json')
       .then((response) => response.json())
-      .then((articles) => Promise.all(articles.map((article) => fetch(`../assets/articles/${encodeURIComponent(article.file)}`).then((response) => response.text()).then((markdown) => ({ article, parsed: parseArticle(markdown, article.file) })))))
+      .then((articles) => Promise.all(articles.map((article) => fetch(articleFileUrl(article.file)).then((response) => { if (!response.ok) throw new Error('Unable to load article'); return response.text(); }).then((markdown) => ({ article, parsed: parseArticle(markdown, article.file) })))))
       .then((articles) => {
         postList.replaceChildren(...articles.map(({ article, parsed }) => {
           const entry = document.createElement('article'); entry.className = 'post'; entry.tabIndex = 0;
